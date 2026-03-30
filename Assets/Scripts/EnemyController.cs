@@ -33,4 +33,10 @@ public class EnemyController : MonoBehaviour
         player.GetComponent<PlayerHealth>().TakeDamage(attackDamage);
         Debug.Log("Inimigo atacou! HP do player: " + player.GetComponent<PlayerHealth>().GetCurrentHealth());
     }
+
+    public void Die()
+    {
+        FindFirstObjectByType<EnemySpawner>().EnemyDied();
+        Destroy(gameObject);
+    }
 }
