@@ -28,7 +28,7 @@ public class PlayerHealth : MonoBehaviour
 
     void Die()
     {
-        FindObjectOfType<GameOverMenu>().ShowGameOver();
+        FindFirstObjectByType<GameOverMenu>().ShowGameOver();
     }
 
     void UpdateUI()
