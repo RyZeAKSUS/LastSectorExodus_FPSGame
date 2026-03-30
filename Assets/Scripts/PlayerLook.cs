@@ -9,6 +9,8 @@ public class PlayerLook : MonoBehaviour
 
     void Update()
     {
+        if (GameOverMenu.gameOverShowing) return;
+
         float mouseX = Input.GetAxisRaw("Mouse X") * mouseSensitivity;
         float mouseY = Input.GetAxisRaw("Mouse Y") * mouseSensitivity;
 

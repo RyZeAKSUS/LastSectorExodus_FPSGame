@@ -33,6 +33,7 @@ public class Gun : MonoBehaviour
 
     void HandleInput()
     {
+        if (GameOverMenu.gameOverShowing) return;
         if (_isReloading) return;
 
         if (Input.GetButton("Fire1") && Time.time >= _nextFireTime && _bulletsLeft > 0)

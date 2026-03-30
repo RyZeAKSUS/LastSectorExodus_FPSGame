@@ -28,7 +28,7 @@ public class PlayerHealth : MonoBehaviour
 
     void Die()
     {
-        Debug.Log("Player morreu!");
+        FindObjectOfType<GameOverMenu>().ShowGameOver();
     }
 
     void UpdateUI()
