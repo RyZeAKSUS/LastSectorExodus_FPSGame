@@ -38,4 +38,9 @@ public class PlayerHealth : MonoBehaviour
             healthText.text = "HP: " + _currentHealth + " / " + maxHealth;
         }
     }
+
+    public float GetCurrentHealth()
+    {
+        return _currentHealth;
+    }
 }
