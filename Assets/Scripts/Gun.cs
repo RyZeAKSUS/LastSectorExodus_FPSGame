@@ -100,4 +100,13 @@ public class Gun : MonoBehaviour
     {
         UpdateAmmoUI();
     }
+
+    void OnDisable()
+    {
+        if (_isReloading)
+        {
+            StopAllCoroutines();
+            _isReloading = false;
+        }
+    }
 }

@@ -80,11 +80,11 @@ public class AmmoBox : MonoBehaviour
 
     void Collect()
     {
-        Gun gun = FindFirstObjectByType<Gun>();
-        if (gun != null)
-        {
-            gun.AddAmmo(ammoAmount);
-        }
+        Gun activeGun = FindFirstObjectByType<GunSwitcher>()
+                        .weapons[FindFirstObjectByType<GunSwitcher>()._currentWeapon]
+                        .GetComponent<Gun>();
+        if (activeGun != null)
+            activeGun.AddAmmo(ammoAmount);
 
         _isAvailable = false;
         _meshRenderer.material = emptyMaterial;

@@ -3,7 +3,7 @@ using UnityEngine;
 public class GunSwitcher : MonoBehaviour
 {
     public GameObject[] weapons;
-    private int _currentWeapon = 0;
+    public int _currentWeapon = 0;
     private bool[] _unlockedWeapons;
 
     void Start()
