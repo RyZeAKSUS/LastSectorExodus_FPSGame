@@ -10,6 +10,10 @@ public class Gun : MonoBehaviour
     public int magazineSize = 30;
     public float reloadTime = 2f;
 
+    [Header("Munição")]
+    public int reserveAmmo = 90;
+    public int maxReserveAmmo = 120;
+
     [Header("Referências")]
     public Camera playerCamera;
     public Transform muzzlePoint;
@@ -29,7 +33,6 @@ public class Gun : MonoBehaviour
     void Update()
     {
         HandleInput();
-        UpdateAmmoUI();
     }
 
     void HandleInput()
@@ -45,7 +48,7 @@ public class Gun : MonoBehaviour
             Shoot();
         }
 
-        if (Input.GetKeyDown(KeyCode.R) && _bulletsLeft < magazineSize)
+        if (Input.GetKeyDown(KeyCode.R) && _bulletsLeft < magazineSize && reserveAmmo > 0)
         {
             StartCoroutine(Reload());
         }
@@ -54,12 +57,10 @@ public class Gun : MonoBehaviour
     void Shoot()
     {
         _bulletsLeft--;
+        UpdateAmmoUI();
 
-        // Spawna a bala no muzzlePoint apontada para o centro do ecrã
         Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
-        Vector3 targetPoint = Physics.Raycast(ray, out RaycastHit hit, range) 
-                              ? hit.point 
-                              : ray.GetPoint(range);
+        Vector3 targetPoint = Physics.Raycast(ray, out RaycastHit hit, range) ? hit.point : ray.GetPoint(range);
 
         Vector3 direction = (targetPoint - muzzlePoint.position).normalized;
         GameObject bullet = Instantiate(bulletPrefab, muzzlePoint.position, Quaternion.LookRotation(direction));
@@ -69,24 +70,29 @@ public class Gun : MonoBehaviour
     System.Collections.IEnumerator Reload()
     {
         _isReloading = true;
+        UpdateAmmoUI();
 
         yield return new WaitForSeconds(reloadTime);
 
-        _bulletsLeft = magazineSize;
+        int bulletsNeeded = magazineSize - _bulletsLeft;
+        int bulletsToLoad = Mathf.Min(bulletsNeeded, reserveAmmo);
+
+        _bulletsLeft += bulletsToLoad;
+        reserveAmmo -= bulletsToLoad;
+
         _isReloading = false;
+        UpdateAmmoUI();
+    }
+
+    public void AddAmmo(int amount)
+    {
+        reserveAmmo = Mathf.Min(reserveAmmo + amount, maxReserveAmmo);
+        UpdateAmmoUI();
     }
 
     void UpdateAmmoUI()
     {
         if (ammoText != null)
-        {
-            ammoText.text = _isReloading ? "Recarregando..." : _bulletsLeft + "/" + magazineSize;
-        }
-    }
-
-    public void AddAmmo(int amount)
-    {
-        _bulletsLeft = Mathf.Min(_bulletsLeft + amount, magazineSize);
-        UpdateAmmoUI();
+            ammoText.text = _isReloading ? "Recarregando..." : _bulletsLeft + " | " + reserveAmmo;
     }
 }

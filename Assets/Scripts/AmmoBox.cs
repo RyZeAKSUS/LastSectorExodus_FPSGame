@@ -4,54 +4,74 @@ using TMPro;
 public class AmmoBox : MonoBehaviour
 {
     [Header("Configuração")]
-    public int ammoAmmount = 30;
+    public int ammoAmount = 30;
     public float respawnTime = 15f;
     public string interactMessage = "Pressiona F para apanhar munição";
+
+    [Header("Materiais")]
+    public Material fullMaterial;
+    public Material emptyMaterial;
 
     [Header("Referências")]
     public TextMeshProUGUI interactText;
 
     private bool _isAvailable = true;
+    private bool _playerNearby = false;
     private MeshRenderer _meshRenderer;
 
     void Start()
     {
         _meshRenderer = GetComponent<MeshRenderer>();
         if (interactText != null)
-        {  
+        {
             interactText.gameObject.SetActive(false);
         }
     }
 
     void Update()
     {
-        if (!_isAvailable) return;
+        if (!_playerNearby) return;
 
-        if (interactText != null && interactText.gameObject.activeSelf)
+        UpdateInteractText();
+
+        if (_isAvailable && Input.GetKeyDown(KeyCode.F))
         {
-            if (Input.GetKeyDown(KeyCode.F))
-            {
-                Collect();
-            }
+            Collect();
+        }
+    }
+
+    void UpdateInteractText()
+    {
+        if (interactText == null) return;
+
+        if (_isAvailable)
+        {
+            interactText.text = interactMessage;
+        }
+        else
+        {
+            interactText.text = "Caixa vazia";
         }
     }
 
     void OnTriggerEnter(Collider other)
     {
-        if (!_isAvailable) return;
-        if (other.CompareTag("Player")) return;
+        if (!other.CompareTag("Player")) return;
 
+        _playerNearby = true;
         if (interactText != null)
         {
             interactText.gameObject.SetActive(true);
-            interactText.text = interactMessage;
         }
+
+        UpdateInteractText();
     }
 
     void OnTriggerExit(Collider other)
     {
         if (!other.CompareTag("Player")) return;
 
+        _playerNearby = false;
         if (interactText != null)
         {
             interactText.gameObject.SetActive(false);
@@ -63,16 +83,12 @@ public class AmmoBox : MonoBehaviour
         Gun gun = FindFirstObjectByType<Gun>();
         if (gun != null)
         {
-            gun.AddAmmo(ammoAmmount);
+            gun.AddAmmo(ammoAmount);
         }
 
         _isAvailable = false;
-        _meshRenderer.enabled = false;
-
-        if (interactText != null)
-        {
-            interactText.gameObject.SetActive(false);
-        }
+        _meshRenderer.material = emptyMaterial;
+        UpdateInteractText();
 
         Invoke(nameof(Respawn), respawnTime);
     }
@@ -80,6 +96,7 @@ public class AmmoBox : MonoBehaviour
     void Respawn()
     {
         _isAvailable = true;
-        _meshRenderer.enabled = true;
+        _meshRenderer.material = fullMaterial;
+        UpdateInteractText();
     }
 }

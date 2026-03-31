@@ -305,6 +305,8 @@ MonoBehaviour:
   fireRate: 0.1
   magazineSize: 30
   reloadTime: 2
+  reserveAmmo: 90
+  maxReserveAmmo: 120
   playerCamera: {fileID: 707141902}
   muzzlePoint: {fileID: 1461102660}
   bulletPrefab: {fileID: 4626076116378590567, guid: e15e2581747a5de4f8a3cf901a71dc20, type: 3}
@@ -4092,6 +4094,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1164964114553366275, guid: 784f88391c74eee468d1e9f7307536ca, type: 3}
+      propertyPath: m_Size.x
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1164964114553366275, guid: 784f88391c74eee468d1e9f7307536ca, type: 3}
+      propertyPath: m_Size.y
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1164964114553366275, guid: 784f88391c74eee468d1e9f7307536ca, type: 3}
+      propertyPath: m_Size.z
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 4155859487574768770, guid: 784f88391c74eee468d1e9f7307536ca, type: 3}
       propertyPath: m_LocalPosition.x
       value: 5
@@ -4133,9 +4147,17 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5355504104145121902, guid: 784f88391c74eee468d1e9f7307536ca, type: 3}
+      propertyPath: fullMaterial
+      value: 
+      objectReference: {fileID: 2100000, guid: 75057e3d9f61e3e48a997cad1d80a604, type: 2}
+    - target: {fileID: 5355504104145121902, guid: 784f88391c74eee468d1e9f7307536ca, type: 3}
       propertyPath: interactText
       value: 
       objectReference: {fileID: 1799395880}
+    - target: {fileID: 5355504104145121902, guid: 784f88391c74eee468d1e9f7307536ca, type: 3}
+      propertyPath: emptyMaterial
+      value: 
+      objectReference: {fileID: 2100000, guid: 0270bbc2239ab624da7dc69ff53738e2, type: 2}
     - target: {fileID: 7489492380950233404, guid: 784f88391c74eee468d1e9f7307536ca, type: 3}
       propertyPath: m_Name
       value: AmmoBox
