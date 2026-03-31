@@ -4,42 +4,42 @@ using UnityEngine.SceneManagement;
 public class PauseMenu : MonoBehaviour
 {
     public GameObject pausePanel;
+    public GameObject hud;
     public static bool gameIsPaused = false;
-    
-    void Update()
-    {
-        if (GameOverMenu.gameOverShowing) return;
-
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            if (gameIsPaused)
-            {
-                Resume();
-            }
-            else
-            {
-                Pause();
-            }
-        }
-    }
-
-    public void Resume()
-    {
-        pausePanel.SetActive(false);
-        Time.timeScale = 1f;
-        gameIsPaused = false;
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
-    }
 
     void Start()
     {
         pausePanel.SetActive(false);
     }
 
+    void Update()
+    {
+        if (GameOverMenu.gameOverShowing) return;
+        if (VictoryMenu.victoryShowing) return;
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (gameIsPaused)
+                Resume();
+            else
+                Pause();
+        }
+    }
+
+    public void Resume()
+    {
+        pausePanel.SetActive(false);
+        hud.SetActive(true);
+        Time.timeScale = 1f;
+        gameIsPaused = false;
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+    }
+
     void Pause()
     {
         pausePanel.SetActive(true);
+        hud.SetActive(false);
         Time.timeScale = 0f;
         gameIsPaused = true;
         Cursor.lockState = CursorLockMode.None;

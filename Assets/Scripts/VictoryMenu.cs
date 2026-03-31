@@ -4,6 +4,7 @@ using UnityEngine.SceneManagement;
 public class VictoryMenu : MonoBehaviour
 {
     public GameObject victoryPanel;
+    public GameObject hud;
     public static bool victoryShowing = false;
 
     void Start()
@@ -15,6 +16,7 @@ public class VictoryMenu : MonoBehaviour
     {
         victoryShowing = true;
         victoryPanel.SetActive(true);
+        hud.SetActive(false);
         Time.timeScale = 0f;
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;

@@ -1,4 +1,5 @@
 using UnityEngine;
+using TMPro;
 
 public class EnemySpawner : MonoBehaviour
 {
@@ -11,6 +12,9 @@ public class EnemySpawner : MonoBehaviour
     public int enemiesPerWave = 3;
     public float timeBetweenWaves = 5f;
     public int totalWaves = 3;
+
+    [Header("UI")]
+    public TextMeshProUGUI waveText;
 
     private int _currentWave = 0;
     private int _enemiesAlive = 0;
@@ -36,6 +40,7 @@ public class EnemySpawner : MonoBehaviour
             }
 
             _waitingForNextWave = true;
+            UpdateWaveUI("Próxima wave em " + timeBetweenWaves + "s...");
             Invoke(nameof(StartWave), timeBetweenWaves);
         }
     }
@@ -48,14 +53,20 @@ public class EnemySpawner : MonoBehaviour
         int enemiesToSpawn = enemiesPerWave * _currentWave;
         _enemiesAlive = enemiesToSpawn;
 
+        UpdateWaveUI("Wave " + _currentWave + " / " + totalWaves);
+
         for (int i = 0; i < enemiesToSpawn; i++)
         {
             Transform spawnPoint = spawnPoints[i % spawnPoints.Length];
             GameObject enemy = Instantiate(enemyPrefab, spawnPoint.position, spawnPoint.rotation);
             enemy.GetComponent<EnemyController>().player = player;
         }
+    }
 
-        Debug.Log("Onda " + _currentWave + " iniciada! Inimigos: " + enemiesToSpawn);
+    void UpdateWaveUI(string text)
+    {
+        if (waveText != null)
+            waveText.text = text;
     }
 
     public void EnemyDied()

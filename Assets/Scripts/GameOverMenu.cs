@@ -4,6 +4,7 @@ using UnityEngine.SceneManagement;
 public class GameOverMenu : MonoBehaviour
 {
     public GameObject gameOverPanel;
+    public GameObject hud;
     public static bool gameOverShowing = false;
 
     void Start()
@@ -15,6 +16,7 @@ public class GameOverMenu : MonoBehaviour
     {
         gameOverShowing = true;
         gameOverPanel.SetActive(true);
+        hud.SetActive(false);
         Time.timeScale = 0f;
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;

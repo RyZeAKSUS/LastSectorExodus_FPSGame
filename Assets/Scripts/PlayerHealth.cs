@@ -1,10 +1,10 @@
 using UnityEngine;
-using TMPro;
+using UnityEngine.UI;
 
 public class PlayerHealth : MonoBehaviour
 {
     public float maxHealth = 100f;
-    public TextMeshProUGUI healthText;
+    public Slider healthBar;
 
     private float _currentHealth;
 
@@ -21,9 +21,12 @@ public class PlayerHealth : MonoBehaviour
         UpdateUI();
 
         if (_currentHealth <= 0f)
-        {
             Die();
-        }
+    }
+
+    public float GetCurrentHealth()
+    {
+        return _currentHealth;
     }
 
     void Die()
@@ -33,14 +36,7 @@ public class PlayerHealth : MonoBehaviour
 
     void UpdateUI()
     {
-        if (healthText != null)
-        {
-            healthText.text = "HP: " + _currentHealth + " / " + maxHealth;
-        }
-    }
-
-    public float GetCurrentHealth()
-    {
-        return _currentHealth;
+        if (healthBar != null)
+            healthBar.value = _currentHealth;
     }
 }
