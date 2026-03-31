@@ -265,7 +265,7 @@ GameObject:
   - component: {fileID: 107085197}
   - component: {fileID: 107085196}
   - component: {fileID: 107085195}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Gun
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -307,6 +307,7 @@ MonoBehaviour:
   reloadTime: 2
   playerCamera: {fileID: 707141902}
   muzzlePoint: {fileID: 1461102660}
+  bulletPrefab: {fileID: 4626076116378590567, guid: e15e2581747a5de4f8a3cf901a71dc20, type: 3}
   ammoText: {fileID: 921867917}
 --- !u!65 &107085196
 BoxCollider:
@@ -354,7 +355,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: a81bf0649b0923248a67a3e6dcadf39e, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -954,7 +955,7 @@ GameObject:
   - component: {fileID: 500227900}
   - component: {fileID: 500227899}
   - component: {fileID: 500227898}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Capsule
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1049,7 +1050,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: fdefa1bdc2384164e935065be37915dc, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1437,7 +1438,7 @@ GameObject:
   - component: {fileID: 707141902}
   - component: {fileID: 707141901}
   - component: {fileID: 707141904}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Main Camera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
@@ -1605,9 +1606,9 @@ GameObject:
   - component: {fileID: 766885694}
   - component: {fileID: 766885696}
   - component: {fileID: 766885697}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1831,7 +1832,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 8130a655f84e77a4ab42a9f3598cd9fd, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -2997,7 +2998,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1455962511}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: WeaponHolder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3029,7 +3030,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1461102660}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: MuzzlePoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3907,7 +3908,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1961007332}
   - component: {fileID: 1961007333}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: CameraHolder
   m_TagString: Untagged
   m_Icon: {fileID: 0}

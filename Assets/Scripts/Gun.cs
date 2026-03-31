@@ -1,6 +1,5 @@
 using UnityEngine;
 using TMPro;
-using Unity.VisualScripting;
 
 public class Gun : MonoBehaviour
 {
@@ -14,6 +13,7 @@ public class Gun : MonoBehaviour
     [Header("Referências")]
     public Camera playerCamera;
     public Transform muzzlePoint;
+    public GameObject bulletPrefab;
     public TextMeshProUGUI ammoText;
 
     private int _bulletsLeft;
@@ -23,6 +23,7 @@ public class Gun : MonoBehaviour
     void Start()
     {
         _bulletsLeft = magazineSize;
+        UpdateAmmoUI();
     }
 
     void Update()
@@ -33,9 +34,9 @@ public class Gun : MonoBehaviour
 
     void HandleInput()
     {
-        if (VictoryMenu.victoryShowing) return;
         if (PauseMenu.gameIsPaused) return;
         if (GameOverMenu.gameOverShowing) return;
+        if (VictoryMenu.victoryShowing) return;
         if (_isReloading) return;
 
         if (Input.GetButton("Fire1") && Time.time >= _nextFireTime && _bulletsLeft > 0)
@@ -54,22 +55,20 @@ public class Gun : MonoBehaviour
     {
         _bulletsLeft--;
 
+        // Spawna a bala no muzzlePoint apontada para o centro do ecrã
         Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
+        Vector3 targetPoint = Physics.Raycast(ray, out RaycastHit hit, range) 
+                              ? hit.point 
+                              : ray.GetPoint(range);
 
-        if (Physics.Raycast(ray, out RaycastHit hit, range))
-        {
-            EnemyHealth enemy = hit.collider.GetComponent<EnemyHealth>();
-            if (enemy != null)
-            {
-                enemy.TakeDamage(damage);
-            }
-        }
+        Vector3 direction = (targetPoint - muzzlePoint.position).normalized;
+        GameObject bullet = Instantiate(bulletPrefab, muzzlePoint.position, Quaternion.LookRotation(direction));
+        bullet.GetComponent<Bullet>().damage = damage;
     }
 
     System.Collections.IEnumerator Reload()
     {
         _isReloading = true;
-        Debug.Log("A recarregar...");
 
         yield return new WaitForSeconds(reloadTime);
 
@@ -80,8 +79,12 @@ public class Gun : MonoBehaviour
     void UpdateAmmoUI()
     {
         if (ammoText != null)
-        {
-            ammoText.text = _isReloading ? "A recarregar..." : _bulletsLeft + " / " + magazineSize;
-        }
+            ammoText.text = _isReloading ? "Recarregando..." : _bulletsLeft + "/" + magazineSize;
+    }
+
+    public void AddAmmo(int amount)
+    {
+        _bulletsLeft = Mathf.Min(_bulletsLeft + amount, magazineSize);
+        UpdateAmmoUI();
     }
 }
