@@ -40,6 +40,7 @@ public class EnemyController : MonoBehaviour
 
     public void Die()
     {
+        GetComponent<EnemyHealth>().AwardScore();
         FindFirstObjectByType<EnemySpawner>().EnemyDied();
         Destroy(gameObject);
     }

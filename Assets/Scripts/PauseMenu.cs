@@ -1,10 +1,12 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using TMPro;
 
 public class PauseMenu : MonoBehaviour
 {
     public GameObject pausePanel;
     public GameObject hud;
+    public TextMeshProUGUI currentScoreText;
     public static bool gameIsPaused = false;
 
     void Start()
@@ -44,6 +46,12 @@ public class PauseMenu : MonoBehaviour
     {
         pausePanel.SetActive(true);
         hud.SetActive(false);
+
+        if (currentScoreText != null && ScoreManager.Instance != null)
+        {
+            currentScoreText.text = "Score: " + ScoreManager.Instance.GetScore();
+        }
+
         Time.timeScale = 0f;
         gameIsPaused = true;
         Cursor.lockState = CursorLockMode.None;

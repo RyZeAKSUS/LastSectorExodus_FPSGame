@@ -166,3 +166,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
   data: {fileID: 11400000, guid: 90eb1ef782b469c4e986fdf7f6e7b8c5, type: 2}
+  scoreValue: 25
