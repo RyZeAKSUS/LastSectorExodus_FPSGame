@@ -10,10 +10,12 @@ public class EnemySpawner : MonoBehaviour
     [Header("Waves")]
     public int enemiesPerWave = 3;
     public float timeBetweenWaves = 5f;
+    public int totalWaves = 3;
 
     private int _currentWave = 0;
     private int _enemiesAlive = 0;
     private bool _waitingForNextWave = false;
+    private bool _gameOver = false;
 
     void Start()
     {
@@ -22,8 +24,17 @@ public class EnemySpawner : MonoBehaviour
 
     void Update()
     {
+        if (_gameOver) return;
+
         if (_enemiesAlive <= 0 && !_waitingForNextWave)
         {
+            if (_currentWave >= totalWaves)
+            {
+                _gameOver = true;
+                FindFirstObjectByType<VictoryMenu>().ShowVictory();
+                return;
+            }
+
             _waitingForNextWave = true;
             Invoke(nameof(StartWave), timeBetweenWaves);
         }

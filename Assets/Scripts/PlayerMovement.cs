@@ -24,8 +24,10 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
+        if (VictoryMenu.victoryShowing) return;
         if (PauseMenu.gameIsPaused) return;
-        
+        if (GameOverMenu.gameOverShowing) return;
+
         GroundCheck();
         HandleMovement();
         HandleJump();

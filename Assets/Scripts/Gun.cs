@@ -33,6 +33,7 @@ public class Gun : MonoBehaviour
 
     void HandleInput()
     {
+        if (VictoryMenu.victoryShowing) return;
         if (PauseMenu.gameIsPaused) return;
         if (GameOverMenu.gameOverShowing) return;
         if (_isReloading) return;

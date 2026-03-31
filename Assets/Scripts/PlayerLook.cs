@@ -9,6 +9,7 @@ public class PlayerLook : MonoBehaviour
 
     void Update()
     {
+        if (VictoryMenu.victoryShowing) return;
         if (PauseMenu.gameIsPaused) return;
         if (GameOverMenu.gameOverShowing) return;
 
