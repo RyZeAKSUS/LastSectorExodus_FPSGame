@@ -18,7 +18,9 @@ public class Bullet : MonoBehaviour
     {
         EnemyHealth enemy = other.GetComponent<EnemyHealth>();
         if (enemy != null)
+        {
             enemy.TakeDamage(damage);
+        }
 
         Destroy(gameObject);
     }

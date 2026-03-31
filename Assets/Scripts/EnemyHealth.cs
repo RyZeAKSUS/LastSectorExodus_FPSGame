@@ -16,6 +16,8 @@ public class EnemyHealth : MonoBehaviour
     {
         _currentHealth -= amount;
         if (_currentHealth <= 0f)
+        {
             _controller.Die();
+        }
     }
 }

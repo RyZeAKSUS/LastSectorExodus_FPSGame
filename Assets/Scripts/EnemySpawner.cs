@@ -70,17 +70,25 @@ public class EnemySpawner : MonoBehaviour
         // Wave 2: básicos e rápidos
         // Wave 3: todos os tipos
         if (_currentWave == 1)
+        {
             return enemyPrefabs[0];
+        }
         else if (_currentWave == 2)
+        {
             return enemyPrefabs[Random.Range(0, 2)];
+        }
         else
+        {
             return enemyPrefabs[Random.Range(0, enemyPrefabs.Length)];
+        }
     }
 
     void UpdateWaveUI(string text)
     {
         if (waveText != null)
+        {
             waveText.text = text;
+        }
     }
 
     public void EnemyDied()

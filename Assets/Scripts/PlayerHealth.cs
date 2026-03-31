@@ -21,7 +21,9 @@ public class PlayerHealth : MonoBehaviour
         UpdateUI();
 
         if (_currentHealth <= 0f)
+        {
             Die();
+        }
     }
 
     public float GetCurrentHealth()
@@ -37,6 +39,8 @@ public class PlayerHealth : MonoBehaviour
     void UpdateUI()
     {
         if (healthBar != null)
+        {
             healthBar.value = _currentHealth;
+        }
     }
 }

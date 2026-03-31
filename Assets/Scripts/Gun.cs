@@ -79,7 +79,9 @@ public class Gun : MonoBehaviour
     void UpdateAmmoUI()
     {
         if (ammoText != null)
+        {
             ammoText.text = _isReloading ? "Recarregando..." : _bulletsLeft + "/" + magazineSize;
+        }
     }
 
     public void AddAmmo(int amount)
