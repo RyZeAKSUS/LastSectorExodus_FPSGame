@@ -7,10 +7,12 @@ public class PlayerHealth : MonoBehaviour
     public Slider healthBar;
 
     private float _currentHealth;
+    private DamageOverlay _damageOverlay;
 
     void Start()
     {
         _currentHealth = maxHealth;
+        _damageOverlay = FindFirstObjectByType<DamageOverlay>();
         UpdateUI();
     }
 
@@ -19,6 +21,11 @@ public class PlayerHealth : MonoBehaviour
         _currentHealth -= amount;
         _currentHealth = Mathf.Clamp(_currentHealth, 0f, maxHealth);
         UpdateUI();
+
+        if (_damageOverlay != null)
+        {
+            _damageOverlay.Flash();
+        }
 
         if (_currentHealth <= 0f)
         {
