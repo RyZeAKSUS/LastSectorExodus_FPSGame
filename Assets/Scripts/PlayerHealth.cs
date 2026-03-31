@@ -50,4 +50,11 @@ public class PlayerHealth : MonoBehaviour
             healthBar.value = _currentHealth;
         }
     }
+
+    public void Heal(float amount)
+    {
+        _currentHealth += amount;
+        _currentHealth = Mathf.Clamp(_currentHealth, 0f, maxHealth);
+        UpdateUI();
+    }
 }
