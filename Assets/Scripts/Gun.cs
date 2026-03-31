@@ -95,4 +95,9 @@ public class Gun : MonoBehaviour
         if (ammoText != null)
             ammoText.text = _isReloading ? "Recarregando..." : _bulletsLeft + " | " + reserveAmmo;
     }
+
+    public void ForceUpdateUI()
+    {
+        UpdateAmmoUI();
+    }
 }
