@@ -2,13 +2,13 @@ using UnityEngine;
 
 public class EnemyHealth : MonoBehaviour
 {
-    public float maxHealth = 50f;
+    public EnemyData data;
     private float _currentHealth;
     private EnemyController _controller;
 
     void Start()
     {
-        _currentHealth = maxHealth;
+        _currentHealth = data != null ? data.maxHealth : 50f;
         _controller = GetComponent<EnemyController>();
     }
 
@@ -16,8 +16,6 @@ public class EnemyHealth : MonoBehaviour
     {
         _currentHealth -= amount;
         if (_currentHealth <= 0f)
-        {
             _controller.Die();
-        }
     }
 }

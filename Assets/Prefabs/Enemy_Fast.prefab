@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 5683000515230782255}
   - component: {fileID: 4892303313638803708}
   m_Layer: 0
-  m_Name: Enemy
+  m_Name: Enemy_Fast
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -70,7 +70,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: ad137d9d27cba4c448330331f87ee71f, type: 2}
+  - {fileID: 2100000, guid: a534dfca67c7c4540b41973b8fe69c43, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -151,7 +151,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 640036e96b37e4b4480fbbd2a00c92aa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyController
-  data: {fileID: 11400000, guid: f2893135ef3075b4092efe9997ab3c71, type: 2}
+  data: {fileID: 11400000, guid: 90c82ba69957a0749a389d103ad989f3, type: 2}
   player: {fileID: 0}
 --- !u!114 &4892303313638803708
 MonoBehaviour:
@@ -165,4 +165,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2378a7ca8669218489213a6316dc26a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
-  data: {fileID: 11400000, guid: f2893135ef3075b4092efe9997ab3c71, type: 2}
+  data: {fileID: 11400000, guid: 90c82ba69957a0749a389d103ad989f3, type: 2}

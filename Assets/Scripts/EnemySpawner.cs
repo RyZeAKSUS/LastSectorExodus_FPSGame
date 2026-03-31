@@ -4,7 +4,7 @@ using TMPro;
 public class EnemySpawner : MonoBehaviour
 {
     [Header("Configuração")]
-    public GameObject enemyPrefab;
+    public GameObject[] enemyPrefabs;
     public Transform[] spawnPoints;
     public Transform player;
 
@@ -58,9 +58,23 @@ public class EnemySpawner : MonoBehaviour
         for (int i = 0; i < enemiesToSpawn; i++)
         {
             Transform spawnPoint = spawnPoints[i % spawnPoints.Length];
-            GameObject enemy = Instantiate(enemyPrefab, spawnPoint.position, spawnPoint.rotation);
+            GameObject prefab = ChoosePrefab();
+            GameObject enemy = Instantiate(prefab, spawnPoint.position, spawnPoint.rotation);
             enemy.GetComponent<EnemyController>().player = player;
         }
+    }
+
+    GameObject ChoosePrefab()
+    {
+        // Wave 1: só básicos
+        // Wave 2: básicos e rápidos
+        // Wave 3: todos os tipos
+        if (_currentWave == 1)
+            return enemyPrefabs[0];
+        else if (_currentWave == 2)
+            return enemyPrefabs[Random.Range(0, 2)];
+        else
+            return enemyPrefabs[Random.Range(0, enemyPrefabs.Length)];
     }
 
     void UpdateWaveUI(string text)
