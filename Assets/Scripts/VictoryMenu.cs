@@ -31,6 +31,13 @@ public class VictoryMenu : MonoBehaviour
         Cursor.visible = true;
     }
 
+    public void Restart()
+    {
+        victoryShowing = false;
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
     public void GoToMainMenu()
     {
         victoryShowing = false;

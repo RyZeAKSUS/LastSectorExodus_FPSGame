@@ -58,7 +58,7 @@ public class PauseMenu : MonoBehaviour
         Cursor.visible = true;
     }
 
-    public void Quit()
+    public void GoToMainMenu()
     {
         gameIsPaused = false;
         Time.timeScale = 1f;

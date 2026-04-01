@@ -3,12 +3,17 @@ using TMPro;
 
 public class Gun : MonoBehaviour
 {
+    public enum FireMode { Automatic, Manual }
+
     [Header("Configuração")]
     public float damage = 25f;
     public float range = 100f;
-    public float fireRate = 0.1f;
+    public float autoFireRate = 0.1f;
+    public float manualFireRate = 0.4f;
     public int magazineSize = 30;
     public float reloadTime = 2f;
+    public FireMode fireMode = FireMode.Automatic;
+    public bool canSwitchFireMode = false;
 
     [Header("Munição")]
     public int reserveAmmo = 90;
@@ -19,6 +24,7 @@ public class Gun : MonoBehaviour
     public Transform muzzlePoint;
     public GameObject bulletPrefab;
     public TextMeshProUGUI ammoText;
+    public TextMeshProUGUI fireModeText;
 
     private int _bulletsLeft;
     private bool _isReloading;
@@ -28,6 +34,7 @@ public class Gun : MonoBehaviour
     {
         _bulletsLeft = magazineSize;
         UpdateAmmoUI();
+        UpdateFireModeUI();
     }
 
     void Update()
@@ -42,15 +49,35 @@ public class Gun : MonoBehaviour
         if (VictoryMenu.victoryShowing) return;
         if (_isReloading) return;
 
-        if (Input.GetButton("Fire1") && Time.time >= _nextFireTime && _bulletsLeft > 0)
+        // Disparo
+        if (fireMode == FireMode.Automatic)
         {
-            _nextFireTime = Time.time + fireRate;
-            Shoot();
+            if (Input.GetButton("Fire1") && Time.time >= _nextFireTime && _bulletsLeft > 0)
+            {
+                _nextFireTime = Time.time + autoFireRate;
+                Shoot();
+            }
+        }
+        else
+        {
+            if (Input.GetButtonDown("Fire1") && Time.time >= _nextFireTime && _bulletsLeft > 0)
+            {
+                _nextFireTime = Time.time + manualFireRate;
+                Shoot();
+            }
         }
 
+        // Recarregar
         if (Input.GetKeyDown(KeyCode.R) && _bulletsLeft < magazineSize && reserveAmmo > 0)
         {
             StartCoroutine(Reload());
+        }
+
+        // Trocar modo de disparo
+        if (Input.GetKeyDown(KeyCode.Q) && canSwitchFireMode)
+        {
+            fireMode = fireMode == FireMode.Automatic ? FireMode.Manual : FireMode.Automatic;
+            UpdateFireModeUI();
         }
     }
 
@@ -84,29 +111,50 @@ public class Gun : MonoBehaviour
         UpdateAmmoUI();
     }
 
-    public void AddAmmo(int amount)
-    {
-        reserveAmmo = Mathf.Min(reserveAmmo + amount, maxReserveAmmo);
-        UpdateAmmoUI();
-    }
-
-    void UpdateAmmoUI()
-    {
-        if (ammoText != null)
-            ammoText.text = _isReloading ? "Recarregando..." : _bulletsLeft + " | " + reserveAmmo;
-    }
-
-    public void ForceUpdateUI()
-    {
-        UpdateAmmoUI();
-    }
-
     void OnDisable()
     {
         if (_isReloading)
         {
             StopAllCoroutines();
             _isReloading = false;
+        }
+    }
+
+    public void AddAmmo(int amount)
+    {
+        reserveAmmo = Mathf.Min(reserveAmmo + amount, maxReserveAmmo);
+        UpdateAmmoUI();
+    }
+
+    public void ForceUpdateUI()
+    {
+        UpdateAmmoUI();
+        UpdateFireModeUI();
+    }
+
+    void UpdateAmmoUI()
+    {
+        if (ammoText == null) return;
+        ammoText.text = _isReloading ? "A Recarregar..." : _bulletsLeft + " | " + reserveAmmo;
+    }
+
+    void UpdateFireModeUI()
+    {
+        if (fireModeText == null) return;
+
+        if (!canSwitchFireMode)
+        {
+            // Pistola e Shotgun — esconde o texto
+            fireModeText.gameObject.SetActive(false);
+        }
+        else
+        {
+            // Rifle — mostra o texto com o modo atual destacado
+            fireModeText.gameObject.SetActive(true);
+            if (fireMode == FireMode.Automatic)
+                fireModeText.text = "<color=#FFD700>Automático</color>  |  Manual";
+            else
+                fireModeText.text = "Automático  |  <color=#FFD700>Manual</color>";
         }
     }
 }
