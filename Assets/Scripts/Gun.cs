@@ -30,6 +30,10 @@ public class Gun : MonoBehaviour
     private bool _isReloading;
     private float _nextFireTime;
 
+    [Header("UI Recarga")]
+    public UnityEngine.UI.Slider reloadBar;
+    public GameObject reloadBarObject;
+
     void Start()
     {
         _bulletsLeft = magazineSize;
@@ -99,11 +103,29 @@ public class Gun : MonoBehaviour
         _isReloading = true;
         UpdateAmmoUI();
 
-        yield return new WaitForSeconds(reloadTime);
+        if (reloadBarObject != null)
+        {
+            reloadBarObject.SetActive(true);
+        }
+
+        float elapsed = 0f;
+        while (elapsed < reloadTime)
+        {
+            elapsed += Time.deltaTime;
+            if (reloadBar != null)
+            {
+                reloadBar.value = elapsed / reloadTime;
+            }
+            yield return null;
+        }
+
+        if (reloadBarObject != null)
+        {
+            reloadBarObject.SetActive(false);
+        }
 
         int bulletsNeeded = magazineSize - _bulletsLeft;
         int bulletsToLoad = Mathf.Min(bulletsNeeded, reserveAmmo);
-
         _bulletsLeft += bulletsToLoad;
         reserveAmmo -= bulletsToLoad;
 
@@ -135,7 +157,7 @@ public class Gun : MonoBehaviour
     void UpdateAmmoUI()
     {
         if (ammoText == null) return;
-        ammoText.text = _isReloading ? "A Recarregar..." : _bulletsLeft + " | " + reserveAmmo;
+        ammoText.text = _bulletsLeft + " | " + reserveAmmo;
     }
 
     void UpdateFireModeUI()
