@@ -9,7 +9,8 @@ public class GunSwitcher : MonoBehaviour
     void Start()
     {
         _unlockedWeapons = new bool[weapons.Length];
-        _unlockedWeapons[0] = true;
+        _unlockedWeapons[0] = true; // pistola sempre desbloqueada
+        _unlockedWeapons[3] = true;
         EquipWeapon(0);
     }
 
@@ -43,6 +44,7 @@ public class GunSwitcher : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Alpha1) && _unlockedWeapons[0]) EquipWeapon(0);
         if (Input.GetKeyDown(KeyCode.Alpha2) && _unlockedWeapons[1]) EquipWeapon(1);
         if (Input.GetKeyDown(KeyCode.Alpha3) && _unlockedWeapons[2]) EquipWeapon(2);
+        if (Input.GetKeyDown(KeyCode.Alpha4) && _unlockedWeapons[3]) EquipWeapon(3);
     }
 
     void EquipWeapon(int index)
@@ -54,11 +56,26 @@ public class GunSwitcher : MonoBehaviour
 
         _currentWeapon = index;
 
-        // Atualizar o AmmoText para a arma equipada
+         // Tenta atualizar UI da Gun se existir
         Gun gun = weapons[_currentWeapon].GetComponent<Gun>();
         if (gun != null)
         {
             gun.ForceUpdateUI();
+        }
+
+        // Se for faca, esconde o FireModeText e limpa o AmmoText
+        Knife knife = weapons[_currentWeapon].GetComponent<Knife>();
+        if (knife != null)
+        {
+            Gun firstGun = weapons[0].GetComponent<Gun>();
+            if (firstGun != null && firstGun.ammoText != null)
+            {
+                firstGun.ammoText.text = "";
+            }
+            if (firstGun != null && firstGun.fireModeText != null)
+            {
+                firstGun.fireModeText.gameObject.SetActive(false);
+            }
         }
     }
 
