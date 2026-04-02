@@ -12,6 +12,11 @@ public class PlayerHealth : MonoBehaviour
     void Start()
     {
         _currentHealth = maxHealth;
+        if (healthBar != null)
+        {
+            healthBar.maxValue = maxHealth;
+            healthBar.value = maxHealth;
+        }
         _damageOverlay = FindFirstObjectByType<DamageOverlay>();
         UpdateUI();
     }

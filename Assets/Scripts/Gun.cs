@@ -139,6 +139,15 @@ public class Gun : MonoBehaviour
         {
             StopAllCoroutines();
             _isReloading = false;
+            if (reloadBarObject != null)
+            {
+                reloadBarObject.SetActive(false);
+            }
+            if (reloadBar != null)
+            {
+                reloadBar.value = 0f;
+            }
+            UpdateAmmoUI();
         }
     }
 
