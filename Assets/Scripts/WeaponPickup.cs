@@ -22,6 +22,9 @@ public class WeaponPickup : MonoBehaviour
 
     void Update()
     {
+        if (PauseMenu.gameIsPaused) return;
+        if (GameOverMenu.gameOverShowing) return;
+
         if (!_playerNearby) return;
         if (Input.GetKeyDown(KeyCode.F))
         {

@@ -30,6 +30,9 @@ public class AmmoBox : MonoBehaviour
 
     void Update()
     {
+        if (PauseMenu.gameIsPaused) return;
+        if (GameOverMenu.gameOverShowing) return;
+
         if (!_playerNearby) return;
 
         UpdateInteractText();

@@ -37,6 +37,14 @@ public class Gun : MonoBehaviour
     void Start()
     {
         _bulletsLeft = magazineSize;
+        if (reloadBarObject != null)
+        {
+            reloadBarObject.SetActive(false);
+        }
+        if (reloadBar != null)
+        {
+            reloadBar.value = 0f;
+        }
         UpdateAmmoUI();
         UpdateFireModeUI();
     }
@@ -53,7 +61,6 @@ public class Gun : MonoBehaviour
         if (VictoryMenu.victoryShowing) return;
         if (_isReloading) return;
 
-        // Disparo
         if (fireMode == FireMode.Automatic)
         {
             if (Input.GetButton("Fire1") && Time.time >= _nextFireTime && _bulletsLeft > 0)
@@ -71,13 +78,11 @@ public class Gun : MonoBehaviour
             }
         }
 
-        // Recarregar
         if (Input.GetKeyDown(KeyCode.R) && _bulletsLeft < magazineSize && reserveAmmo > 0)
         {
             StartCoroutine(Reload());
         }
 
-        // Trocar modo de disparo
         if (Input.GetKeyDown(KeyCode.Q) && canSwitchFireMode)
         {
             fireMode = fireMode == FireMode.Automatic ? FireMode.Manual : FireMode.Automatic;
@@ -175,12 +180,10 @@ public class Gun : MonoBehaviour
 
         if (!canSwitchFireMode)
         {
-            // Pistola e Shotgun — esconde o texto
             fireModeText.gameObject.SetActive(false);
         }
         else
         {
-            // Rifle — mostra o texto com o modo atual destacado
             fireModeText.gameObject.SetActive(true);
             if (fireMode == FireMode.Automatic)
                 fireModeText.text = "<color=#FFD700>Automático</color>  |  Manual";
