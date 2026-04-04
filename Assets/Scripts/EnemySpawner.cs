@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using System.Collections.Generic;
 
 public class EnemySpawner : MonoBehaviour
 {
@@ -16,19 +17,18 @@ public class EnemySpawner : MonoBehaviour
     [Header("UI")]
     public TextMeshProUGUI waveText;
 
+    [Header("Combat Zone")]
+    public bool activated = false;
+
     private int _currentWave = 0;
     private int _enemiesAlive = 0;
     private bool _waitingForNextWave = false;
     private bool _gameOver = false;
-
-    void Start()
-    {
-        StartWave();
-    }
+    private List<EnemyController> _activeEnemies = new List<EnemyController>();
 
     void Update()
     {
-        if (_gameOver) return;
+        if (!activated || _gameOver) return;
 
         if (_enemiesAlive <= 0 && !_waitingForNextWave)
         {
@@ -38,17 +38,24 @@ public class EnemySpawner : MonoBehaviour
                 FindFirstObjectByType<VictoryMenu>().ShowVictory();
                 return;
             }
-
             _waitingForNextWave = true;
-            UpdateWaveUI("Próxima wave em " + timeBetweenWaves + "s...");
+            UpdateWaveUI("Próxima wave em " + timeBetweenWaves + "segundos");
             Invoke(nameof(StartWave), timeBetweenWaves);
         }
+    }
+
+    public void Activate()
+    {
+        if (activated) return;
+        activated = true;
+        StartWave();
     }
 
     void StartWave()
     {
         _currentWave++;
         _waitingForNextWave = false;
+        _activeEnemies.Clear();
 
         int enemiesToSpawn = _currentWave == 5 ? 3 : enemiesPerWave + (_currentWave - 1) * 2;
         _enemiesAlive = enemiesToSpawn;
@@ -58,9 +65,26 @@ public class EnemySpawner : MonoBehaviour
         for (int i = 0; i < enemiesToSpawn; i++)
         {
             Transform spawnPoint = spawnPoints[i % spawnPoints.Length];
+
+            Vector3 randomOffset = new Vector3(Random.Range(-3f, 3f), 0f, Random.Range(-3f, 3f));
+            Vector3 spawnPosition = spawnPoint.position + randomOffset;
+
             GameObject prefab = ChoosePrefab();
             GameObject enemy = Instantiate(prefab, spawnPoint.position, spawnPoint.rotation);
-            enemy.GetComponent<EnemyController>().player = player;
+            EnemyController controller = enemy.GetComponent<EnemyController>();
+            controller.player = player;
+            _activeEnemies.Add(controller);
+
+            StartCoroutine(ActivateAfterDelay(controller, i * 0.2f));
+        }
+    }
+
+    System.Collections.IEnumerator ActivateAfterDelay(EnemyController controller, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        if (controller != null)
+        {
+            controller.Activate();
         }
     }
 
@@ -85,7 +109,9 @@ public class EnemySpawner : MonoBehaviour
         else
         {
             if (Random.value < 0.3f)
+            {
                 return enemyPrefabs[3];
+            }
             return enemyPrefabs[Random.Range(0, 3)];
         }
     }

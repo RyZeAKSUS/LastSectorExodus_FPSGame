@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: EnemyData_Scavenger
   m_EditorClassIdentifier: Assembly-CSharp::EnemyData
   enemyName: Enemy
-  maxHealth: 50
-  moveSpeed: 3.5
-  attackDamage: 10
-  attackRate: 1
-  attackRange: 2
+  maxHealth: 60
+  moveSpeed: 4.5
+  attackDamage: 8
+  attackRate: 0.8
+  attackRange: 1.8
