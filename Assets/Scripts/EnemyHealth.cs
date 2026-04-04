@@ -16,6 +16,7 @@ public class EnemyHealth : MonoBehaviour
     public void TakeDamage(float amount)
     {
         _currentHealth -= amount;
+        _controller.TakeHit();
         if (_currentHealth <= 0f)
         {
             _controller.Die();
@@ -28,5 +29,10 @@ public class EnemyHealth : MonoBehaviour
         {
             ScoreManager.Instance.AddScore(scoreValue);
         }
+    }
+
+    public float GetHealthPercent()
+    {
+        return _currentHealth / data.maxHealth;
     }
 }
