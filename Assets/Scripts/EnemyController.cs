@@ -18,9 +18,16 @@ public class EnemyController : MonoBehaviour
     private bool _isMoving = false;
     private float _idleTimer = 0f;
     private float _idleChangeTime = 4f;
-    private int _maxIdleIndex = 2;
-    private int _maxAttackIndex = 1;
-    private int _maxWalkIndex = 4;
+    private int _maxIdleIndex = 0;
+    private int _maxAttackIndex = 0;
+    private int _maxWalkIndex = 0;
+    private bool _hasIsRunning = false;
+    private bool _hasHitIndex = false;
+    private bool _hasDeathIndex = false;
+    private bool _hasIdleIndex = false;
+    private bool _hasWalkIndex = false;
+    private bool _hasAttackIndex = false;
+    private bool _hasRunIndex = false;
 
     void Start()
     {
@@ -32,6 +39,23 @@ public class EnemyController : MonoBehaviour
             _agent.speed = data.moveSpeed;
         }
 
+        if (_animator != null)
+        {
+            foreach (AnimatorControllerParameter p in _animator.parameters)
+            {
+                switch (p.name)
+                {
+                    case "isRunning": _hasIsRunning = true; break;
+                    case "hitIndex": _hasHitIndex = true; break;
+                    case "deathIndex": _hasDeathIndex = true; break;
+                    case "idleIndex": _hasIdleIndex = true; break;
+                    case "walkIndex": _hasWalkIndex = true; break;
+                    case "attackIndex": _hasAttackIndex = true; break;
+                    case "runIndex": _hasRunIndex = true; break;
+                }
+            }
+        }
+
         if (isBoss)
         {
             _maxIdleIndex = 2;
@@ -41,8 +65,8 @@ public class EnemyController : MonoBehaviour
         else if (gameObject.name.Contains("Mutant"))
         {
             _maxIdleIndex = 3;
-            _maxAttackIndex = 5;
-            _maxWalkIndex = 4;
+            _maxAttackIndex = 4;
+            _maxWalkIndex = 5;
         }
         else if (gameObject.name.Contains("Arachnid"))
         {
@@ -50,9 +74,15 @@ public class EnemyController : MonoBehaviour
             _maxAttackIndex = 0;
             _maxWalkIndex = 4;
         }
+        else
+        {
+            _maxIdleIndex = 2;
+            _maxAttackIndex = 1;
+            _maxWalkIndex = 3;
+        }
 
-        _animator?.SetInteger("idleIndex", 0);
-        _animator?.SetInteger("walkIndex", 0);
+        if (_hasIdleIndex) _animator.SetInteger("idleIndex", 0);
+        if (_hasWalkIndex) _animator.SetInteger("walkIndex", 0);
     }
 
     void Update()
@@ -80,7 +110,7 @@ public class EnemyController : MonoBehaviour
             {
                 _isMoving = false;
                 _animator?.SetBool("isWalking", false);
-                _animator?.SetBool("isRunning", false);
+                if (_hasIsRunning) _animator.SetBool("isRunning", false);
             }
 
             if (Time.time >= _nextAttackTime)
@@ -97,15 +127,15 @@ public class EnemyController : MonoBehaviour
             {
                 _isMoving = true;
 
-                if (isBoss && _rageActivated)
+                if (isBoss && _rageActivated && _hasIsRunning)
                 {
-                    _animator?.SetBool("isRunning", true);
-                    _animator?.SetInteger("runIndex", Random.Range(0, 3));
+                    _animator.SetBool("isRunning", true);
+                    if (_hasRunIndex) _animator.SetInteger("runIndex", Random.Range(0, 3));
                 }
                 else
                 {
                     _animator?.SetBool("isWalking", true);
-                    _animator?.SetInteger("walkIndex", Random.Range(0, _maxWalkIndex + 1));
+                    if (_hasWalkIndex) _animator.SetInteger("walkIndex", Random.Range(0, _maxWalkIndex + 1));
                 }
             }
         }
@@ -116,14 +146,14 @@ public class EnemyController : MonoBehaviour
             if (_idleTimer >= _idleChangeTime)
             {
                 _idleTimer = 0f;
-                _animator?.SetInteger("idleIndex", Random.Range(0, _maxIdleIndex + 1));
+                if (_hasIdleIndex) _animator.SetInteger("idleIndex", Random.Range(0, _maxIdleIndex + 1));
             }
         }
     }
 
     void Attack()
     {
-        _animator?.SetInteger("attackIndex", Random.Range(0, _maxAttackIndex + 1));
+        if (_hasAttackIndex) _animator.SetInteger("attackIndex", Random.Range(0, _maxAttackIndex + 1));
         _animator?.SetTrigger("attack");
         player.GetComponent<PlayerHealth>().TakeDamage(data.attackDamage);
     }
@@ -132,8 +162,11 @@ public class EnemyController : MonoBehaviour
     {
         if (!_isDead)
         {
-            int maxHitIndex = isBoss ? 2 : (gameObject.name.Contains("Mutant") ? 3 : 0);
-            _animator?.SetInteger("hitIndex", Random.Range(0, maxHitIndex + 1));
+            if (_hasHitIndex)
+            {
+                int maxHitIndex = isBoss ? 2 : (gameObject.name.Contains("Mutant") ? 3 : 0);
+                _animator.SetInteger("hitIndex", Random.Range(0, maxHitIndex + 1));
+            }
             _animator?.SetTrigger("takehit");
         }
     }
@@ -146,12 +179,20 @@ public class EnemyController : MonoBehaviour
         _agent.SetDestination(transform.position);
         _agent.enabled = false;
 
-        int maxDeathIndex = isBoss ? 2 : (gameObject.name.Contains("Mutant") ? 3 : 0);
-        _animator?.SetInteger("deathIndex", Random.Range(0, maxDeathIndex + 1));
+        if (_hasDeathIndex)
+        {
+            int maxDeathIndex = isBoss ? 2 : (gameObject.name.Contains("Mutant") ? 3 : 0);
+            _animator.SetInteger("deathIndex", Random.Range(0, maxDeathIndex + 1));
+        }
         _animator?.SetTrigger("death");
 
         GetComponent<EnemyHealth>().AwardScore();
-        FindFirstObjectByType<EnemySpawner>().EnemyDied();
+
+        EnemySpawner spawner = FindFirstObjectByType<EnemySpawner>();
+        if (spawner != null)
+        {
+            spawner.EnemyDied();
+        }
 
         Destroy(gameObject, 3f);
     }

@@ -9,9 +9,9 @@ public class EnemySpawner : MonoBehaviour
     public Transform player;
 
     [Header("Waves")]
-    public int enemiesPerWave = 3;
-    public float timeBetweenWaves = 5f;
-    public int totalWaves = 3;
+    public int enemiesPerWave = 4;
+    public float timeBetweenWaves = 8f;
+    public int totalWaves = 5;
 
     [Header("UI")]
     public TextMeshProUGUI waveText;
@@ -50,7 +50,7 @@ public class EnemySpawner : MonoBehaviour
         _currentWave++;
         _waitingForNextWave = false;
 
-        int enemiesToSpawn = enemiesPerWave * _currentWave;
+        int enemiesToSpawn = _currentWave == 5 ? 3 : enemiesPerWave + (_currentWave - 1) * 2;
         _enemiesAlive = enemiesToSpawn;
 
         UpdateWaveUI("Wave " + _currentWave + " / " + totalWaves);
@@ -66,9 +66,6 @@ public class EnemySpawner : MonoBehaviour
 
     GameObject ChoosePrefab()
     {
-        // Wave 1: só básicos
-        // Wave 2: básicos e rápidos
-        // Wave 3: todos os tipos
         if (_currentWave == 1)
         {
             return enemyPrefabs[0];
@@ -77,9 +74,19 @@ public class EnemySpawner : MonoBehaviour
         {
             return enemyPrefabs[Random.Range(0, 2)];
         }
+        else if (_currentWave == 3)
+        {
+            return enemyPrefabs[Random.Range(0, 3)];
+        }
+        else if (_currentWave == 4)
+        {
+            return enemyPrefabs[Random.Range(0, 3)];
+        }
         else
         {
-            return enemyPrefabs[Random.Range(0, enemyPrefabs.Length)];
+            if (Random.value < 0.3f)
+                return enemyPrefabs[3];
+            return enemyPrefabs[Random.Range(0, 3)];
         }
     }
 
