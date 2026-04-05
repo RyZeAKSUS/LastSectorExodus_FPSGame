@@ -9,46 +9,17 @@ public class GunSwitcher : MonoBehaviour
     void Start()
     {
         _unlockedWeapons = new bool[weapons.Length];
-        _unlockedWeapons[0] = true; // faca sempre desbloqueada
-        _unlockedWeapons[1] = true; // pistola sempre desbloqueada
-        EquipWeapon(1); // começa com a pistola equipada
-    }
-
-    void Update()
-    {
-        if (PauseMenu.gameIsPaused) return;
-        if (GameOverMenu.gameOverShowing) return;
-        if (VictoryMenu.victoryShowing) return;
-
-        HandleScrollSwitch();
-        HandleKeySwitch();
-    }
-
-    void HandleScrollSwitch()
-    {
-        float scroll = Input.GetAxis("Mouse ScrollWheel");
-        if (scroll > 0f)
+        for (int i = 0; i < weapons.Length; i++)
         {
-            int next = (_currentWeapon + 1) % weapons.Length;
-            if (_unlockedWeapons[next]) EquipWeapon(next);
+            _unlockedWeapons[i] = true;
         }
-        else if (scroll < 0f)
-        {
-            int prev = (_currentWeapon - 1 + weapons.Length) % weapons.Length;
-            if (_unlockedWeapons[prev]) EquipWeapon(prev);
-        }
+
+        HideAllWeapons();
     }
 
-    void HandleKeySwitch()
-    {
-        if (Input.GetKeyDown(KeyCode.Alpha1) && _unlockedWeapons[0]) EquipWeapon(0);
-        if (Input.GetKeyDown(KeyCode.Alpha2) && _unlockedWeapons[1]) EquipWeapon(1);
-        if (Input.GetKeyDown(KeyCode.Alpha3) && _unlockedWeapons[2]) EquipWeapon(2);
-        if (Input.GetKeyDown(KeyCode.Alpha4) && _unlockedWeapons[3]) EquipWeapon(3);
-        if (Input.GetKeyDown(KeyCode.Alpha5) && _unlockedWeapons[4]) EquipWeapon(4);
-    }
+    void Update() { }
 
-    void EquipWeapon(int index)
+    public void EquipWeapon(int index)
     {
         for (int i = 0; i < weapons.Length; i++)
         {
@@ -87,5 +58,22 @@ public class GunSwitcher : MonoBehaviour
         if (index < 0 || index >= weapons.Length) return;
         _unlockedWeapons[index] = true;
         EquipWeapon(index);
+    }
+
+    public void EquipWeaponPublic(int index)
+    {
+        if (index < 0 || index >= weapons.Length) return;
+        EquipWeapon(index);
+    }
+
+    public void HideAllWeapons()
+    {
+        foreach (GameObject w in weapons)
+        {
+            if (w != null)
+            {
+                w.SetActive(false);
+            }
+        }
     }
 }

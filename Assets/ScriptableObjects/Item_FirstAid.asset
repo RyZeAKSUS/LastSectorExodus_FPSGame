@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32d23d97f46c50540a4a66c296794146, type: 3}
+  m_Name: Item_FirstAid
+  m_EditorClassIdentifier: Assembly-CSharp::ItemDefinition
+  itemName: "Kit M\xE9dico"
+  category: 1
+  icon: {fileID: 0}
+  worldPrefab: {fileID: 1987713744733760, guid: b55df95fa6211964e8ad561501250fac, type: 3}
+  pickupPrefab: {fileID: 275698136563373625, guid: c58ea348e1a2f6d448c7036629433a49, type: 3}
+  healAmount: 50
+  weaponIndex: -1

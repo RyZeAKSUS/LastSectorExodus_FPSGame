@@ -12,16 +12,15 @@ public class PlayerLook : MonoBehaviour
         if (VictoryMenu.victoryShowing) return;
         if (PauseMenu.gameIsPaused) return;
         if (GameOverMenu.gameOverShowing) return;
+        if (QuickInventory.Instance != null && QuickInventory.Instance.GetInventoryOpen()) return;
 
         float mouseX = Input.GetAxisRaw("Mouse X") * mouseSensitivity;
         float mouseY = Input.GetAxisRaw("Mouse Y") * mouseSensitivity;
 
-        // Rotação vertical (câmara sobe/desce)
         _xRotation -= mouseY;
         _xRotation = Mathf.Clamp(_xRotation, -90f, 90f);
         transform.localRotation = Quaternion.Euler(_xRotation, 0f, 0f);
 
-        // Rotação horizontal (corpo roda esquerda/direita)
         playerBody.Rotate(Vector3.up * mouseX);
     }
 }

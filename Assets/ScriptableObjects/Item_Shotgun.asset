@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32d23d97f46c50540a4a66c296794146, type: 3}
+  m_Name: Item_Shotgun
+  m_EditorClassIdentifier: Assembly-CSharp::ItemDefinition
+  itemName: Shotgun
+  category: 0
+  icon: {fileID: 0}
+  worldPrefab: {fileID: 2572275599149502073, guid: 4b12a5f80acf9204e9c0fbf832d9a048, type: 3}
+  pickupPrefab: {fileID: 3155484033066491889, guid: 229b7eb6d1e12da4cafff5baabb18331, type: 3}
+  healAmount: 0
+  weaponIndex: 2

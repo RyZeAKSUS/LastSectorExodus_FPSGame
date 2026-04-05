@@ -39,7 +39,20 @@ public class EnemyController : MonoBehaviour
 
     void Start()
     {
-        _animator = GetComponentInChildren<Animator>();
+        _animator = null;
+
+        foreach (Transform child in GetComponentInChildren<Transform>())
+        {
+            if (child.gameObject.activeInHierarchy)
+            {
+                Animator anim = child.GetComponent<Animator>();
+                if (anim != null)
+                {
+                    _animator = anim;
+                    break;
+                }
+            }
+        }
 
         if (data != null)
         {

@@ -72,6 +72,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyController
   data: {fileID: 11400000, guid: 0c69eceba40ee644bba9b068875b25c4, type: 2}
   player: {fileID: 0}
+  startActive: 0
   isBoss: 0
   rageHealthThreshold: 0.5
 --- !u!114 &395875686018475578

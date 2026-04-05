@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32d23d97f46c50540a4a66c296794146, type: 3}
+  m_Name: Item_Pistol
+  m_EditorClassIdentifier: Assembly-CSharp::ItemDefinition
+  itemName: Pistola
+  category: 0
+  icon: {fileID: 0}
+  worldPrefab: {fileID: 8552251479144847177, guid: 853547bb5f2f57144b9dbd6bf6d12619, type: 3}
+  pickupPrefab: {fileID: 2013637963025024741, guid: 4183a43f47115f448baaae1f3e90b6b2, type: 3}
+  healAmount: 0
+  weaponIndex: 1

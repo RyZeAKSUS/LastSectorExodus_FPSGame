@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32d23d97f46c50540a4a66c296794146, type: 3}
+  m_Name: Item_Knife
+  m_EditorClassIdentifier: Assembly-CSharp::ItemDefinition
+  itemName: Faca
+  category: 0
+  icon: {fileID: 0}
+  worldPrefab: {fileID: 2456186492758868597, guid: 1404b1f6ca323e54fa4b4bc7074968cc, type: 3}
+  pickupPrefab: {fileID: 332914828271311136, guid: 0ba2195579ff9be42ad4151c3d6fd80f, type: 3}
+  healAmount: 0
+  weaponIndex: 0

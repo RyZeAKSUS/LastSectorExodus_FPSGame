@@ -4,8 +4,12 @@ using System.Collections.Generic;
 
 public class EnemySpawner : MonoBehaviour
 {
-    [Header("Configuração")]
-    public GameObject[] enemyPrefabs;
+    [Header("Prefabs por tipo")]
+    public GameObject[] scavengerVariants;
+    public GameObject[] arachnidVariants;
+    public GameObject[] mutantVariants;
+    public GameObject[] bossVariants;
+
     public Transform[] spawnPoints;
     public Transform player;
 
@@ -24,7 +28,6 @@ public class EnemySpawner : MonoBehaviour
     private int _enemiesAlive = 0;
     private bool _waitingForNextWave = false;
     private bool _gameOver = false;
-    private List<EnemyController> _activeEnemies = new List<EnemyController>();
 
     void Update()
     {
@@ -35,11 +38,11 @@ public class EnemySpawner : MonoBehaviour
             if (_currentWave >= totalWaves)
             {
                 _gameOver = true;
-                FindFirstObjectByType<VictoryMenu>().ShowVictory();
+                FindFirstObjectByType<VictoryMenu>()?.ShowVictory();
                 return;
             }
             _waitingForNextWave = true;
-            UpdateWaveUI("Próxima wave em " + timeBetweenWaves + "segundos");
+            UpdateWaveUI("Próxima wave em " + timeBetweenWaves + " segundos");
             Invoke(nameof(StartWave), timeBetweenWaves);
         }
     }
@@ -55,9 +58,8 @@ public class EnemySpawner : MonoBehaviour
     {
         _currentWave++;
         _waitingForNextWave = false;
-        _activeEnemies.Clear();
 
-        int enemiesToSpawn = _currentWave == 5 ? 3 : enemiesPerWave + (_currentWave - 1) * 2;
+        int enemiesToSpawn = _currentWave == totalWaves ? 3 : enemiesPerWave + (_currentWave - 1) * 2;
         _enemiesAlive = enemiesToSpawn;
 
         UpdateWaveUI("Wave " + _currentWave + " / " + totalWaves);
@@ -65,67 +67,72 @@ public class EnemySpawner : MonoBehaviour
         for (int i = 0; i < enemiesToSpawn; i++)
         {
             Transform spawnPoint = spawnPoints[i % spawnPoints.Length];
-
-            Vector3 randomOffset = new Vector3(Random.Range(-3f, 3f), 0f, Random.Range(-3f, 3f));
-            Vector3 spawnPosition = spawnPoint.position + randomOffset;
+            Vector3 offset = new Vector3(Random.Range(-3f, 3f), 0f, Random.Range(-3f, 3f));
+            Vector3 spawnPos = spawnPoint.position + offset;
 
             GameObject prefab = ChoosePrefab();
-            GameObject enemy = Instantiate(prefab, spawnPoint.position, spawnPoint.rotation);
-            EnemyController controller = enemy.GetComponent<EnemyController>();
-            controller.player = player;
-            _activeEnemies.Add(controller);
+            GameObject enemy = Instantiate(prefab, spawnPos, spawnPoint.rotation);
+            EnemyController ctrl = enemy.GetComponent<EnemyController>();
+            ctrl.player = player;
 
-            StartCoroutine(ActivateAfterDelay(controller, i * 0.2f));
-        }
-    }
-
-    System.Collections.IEnumerator ActivateAfterDelay(EnemyController controller, float delay)
-    {
-        yield return new WaitForSeconds(delay);
-        if (controller != null)
-        {
-            controller.Activate();
+            StartCoroutine(ActivateAfterDelay(ctrl, i * 0.2f));
         }
     }
 
     GameObject ChoosePrefab()
     {
+        GameObject[] pool;
+
         if (_currentWave == 1)
         {
-            return enemyPrefabs[0];
+            pool = scavengerVariants;
         }
         else if (_currentWave == 2)
         {
-            return enemyPrefabs[Random.Range(0, 2)];
+            pool = Random.value < 0.5f ? scavengerVariants : arachnidVariants;
         }
         else if (_currentWave == 3)
         {
-            return enemyPrefabs[Random.Range(0, 3)];
+            float r = Random.value;
+            pool = r < 0.33f ? scavengerVariants : r < 0.66f ? arachnidVariants : mutantVariants;
         }
         else if (_currentWave == 4)
         {
-            return enemyPrefabs[Random.Range(0, 3)];
+            float r = Random.value;
+            pool = r < 0.33f ? scavengerVariants : r < 0.66f ? arachnidVariants : mutantVariants;
         }
         else
         {
             if (Random.value < 0.3f)
             {
-                return enemyPrefabs[3];
+                pool = bossVariants;
             }
-            return enemyPrefabs[Random.Range(0, 3)];
+            else
+            {
+                float r = Random.value;
+                pool = r < 0.33f ? scavengerVariants : r < 0.66f ? arachnidVariants : mutantVariants;
+            }
+        }
+
+        return pool[Random.Range(0, pool.Length)];
+    }
+
+    System.Collections.IEnumerator ActivateAfterDelay(EnemyController ctrl, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        if (ctrl != null) 
+        {
+            ctrl.Activate();
         }
     }
 
     void UpdateWaveUI(string text)
     {
-        if (waveText != null)
-        {
+        if (waveText != null) 
+        {    
             waveText.text = text;
         }
     }
 
-    public void EnemyDied()
-    {
-        _enemiesAlive--;
-    }
+    public void EnemyDied() => _enemiesAlive--;
 }

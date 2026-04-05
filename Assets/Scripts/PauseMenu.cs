@@ -18,11 +18,13 @@ public class PauseMenu : MonoBehaviour
     {
         if (GameOverMenu.gameOverShowing) return;
         if (VictoryMenu.victoryShowing) return;
+        
+        if (QuickInventory.Instance != null && QuickInventory.Instance.GetInventoryOpen()) return;
 
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             if (gameIsPaused)
-            {
+            {    
                 Resume();
             }
             else
@@ -30,6 +32,11 @@ public class PauseMenu : MonoBehaviour
                 Pause();
             }
         }
+    }
+
+    bool IsInventoryOpen()
+    {
+        return QuickInventory.Instance != null && QuickInventory.Instance.GetInventoryOpen();
     }
 
     public void Resume()

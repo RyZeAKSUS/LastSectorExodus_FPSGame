@@ -26,7 +26,7 @@ Transform:
   m_GameObject: {fileID: 1030065881660482368}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 683.49, y: 24.77978, z: 527.8006}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -45,15 +45,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemySpawner
   enemyPrefabs:
-  - {fileID: 4863870914433815991, guid: eac8bda01a5db8842b614fa38313ce83, type: 3}
-  - {fileID: 4863870914433815991, guid: 51dda8e7fedb6d24a9ab948973d95ba8, type: 3}
-  - {fileID: 4863870914433815991, guid: 60caaff7dd6af084bb99359c8b2aa56f, type: 3}
+  - {fileID: 7034137616654473258, guid: a31b55f8e8144f14eb2191d8912eacb7, type: 3}
+  - {fileID: 8183555704643935460, guid: b8b1e9897f923e24ea2df275d09ee806, type: 3}
+  - {fileID: 594114505063873377, guid: ad57ad48f13826f4cba99430cfdb53e2, type: 3}
+  - {fileID: 993232734960640635, guid: ead801306e908894ba07d5799409fee8, type: 3}
   spawnPoints:
-  - {fileID: 0}
-  - {fileID: 0}
   - {fileID: 0}
   player: {fileID: 0}
   enemiesPerWave: 3
   timeBetweenWaves: 5
-  totalWaves: 3
+  totalWaves: 4
   waveText: {fileID: 0}
+  activated: 0

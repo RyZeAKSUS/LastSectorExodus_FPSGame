@@ -22,7 +22,19 @@ public class WaterZone : MonoBehaviour
     {
         if (!_inWater) return;
         if (GameOverMenu.gameOverShowing) return;
-        if (PauseMenu.gameIsPaused) return;
+        if (PauseMenu.gameIsPaused)
+        {
+            if (drowningPanel != null)
+            {
+                drowningPanel.SetActive(false);
+            }
+            return;
+        }
+
+        if (drowningPanel != null && !drowningPanel.activeSelf)
+        {
+            drowningPanel.SetActive(true);
+        }
 
         if (_playerMovement != null)
         {
