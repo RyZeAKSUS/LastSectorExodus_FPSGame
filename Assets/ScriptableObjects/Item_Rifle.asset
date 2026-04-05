@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ItemDefinition
   itemName: Rifle
   category: 0
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: e9ad2616226b6b241ac54878f1f41d1a, type: 3}
   worldPrefab: {fileID: 4641092256577258056, guid: 9cb01e8d5a183804985968d38afa49ad, type: 3}
   pickupPrefab: {fileID: 5982416554039205839, guid: 10e7046cafd547f4e8592c815e12eff9, type: 3}
   healAmount: 0

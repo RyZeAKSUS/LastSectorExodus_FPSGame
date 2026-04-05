@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ItemDefinition
   itemName: Shotgun
   category: 0
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: dfa718d3a8315a74fa875e55a4f3eb4b, type: 3}
   worldPrefab: {fileID: 2572275599149502073, guid: 4b12a5f80acf9204e9c0fbf832d9a048, type: 3}
   pickupPrefab: {fileID: 3155484033066491889, guid: 229b7eb6d1e12da4cafff5baabb18331, type: 3}
   healAmount: 0

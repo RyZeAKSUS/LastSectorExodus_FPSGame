@@ -1324,7 +1324,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6824078100630807611}
-  - component: {fileID: 7588909288317628961}
   - component: {fileID: 8921647788305171160}
   m_Layer: 0
   m_Name: SniperPickup
@@ -1349,21 +1348,6 @@ Transform:
   - {fileID: 8062793454088950659}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7588909288317628961
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7053051166419310737}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 18fe7554ddb907c4db0177c2818e6da6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::WeaponPickup
-  weaponIndex: 4
-  weaponName: Sniper
-  interactText: {fileID: 0}
 --- !u!65 &8921647788305171160
 BoxCollider:
   m_ObjectHideFlags: 0

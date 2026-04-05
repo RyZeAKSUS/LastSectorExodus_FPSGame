@@ -25,7 +25,6 @@ public class QuickInventory : MonoBehaviour
             Destroy(gameObject); 
             return; 
         }
-
         Instance = this;
     }
 
@@ -121,7 +120,7 @@ public class QuickInventory : MonoBehaviour
     void RefreshEquipped()
     {
         for (int i = 0; i < _spawnedConsumables.Length; i++)
-        {
+        {  
             if (_spawnedConsumables[i] != null)
             {
                 _spawnedConsumables[i].SetActive(false);
@@ -135,9 +134,9 @@ public class QuickInventory : MonoBehaviour
 
         if (item.category == ItemCategory.Weapon)
         {
-            if (item.weaponIndex >= 0)
-            {
-                _gunSwitcher?.EquipWeaponPublic(item.weaponIndex);
+            if (_gunSwitcher != null && item.weaponIndex >= 0)
+            {    
+                _gunSwitcher.EquipWeaponPublic(item.weaponIndex);
             }
             return;
         }
@@ -154,7 +153,7 @@ public class QuickInventory : MonoBehaviour
         _spawnedConsumables[_activeSlot].SetActive(true);
     }
 
-    public PickupResult TryPickup(ItemDefinition newItem, Vector3 pickupWorldPosition)
+    public PickupResult TryPickup(ItemDefinition newItem, Vector3 pickupPosition)
     {
         for (int i = 0; i < _slots.Length; i++)
         {
@@ -191,8 +190,8 @@ public class QuickInventory : MonoBehaviour
         return true;
     }
 
-    public ItemDefinition GetSlotItem(int index) => _slots[index];
     public ItemDefinition GetActiveItem() => _slots[_activeSlot];
+    public ItemDefinition GetSlotItem(int index) => _slots[index];
     public int GetActiveSlot() => _activeSlot;
     public bool GetInventoryOpen() => _isOpen;
 }

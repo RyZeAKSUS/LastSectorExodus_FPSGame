@@ -90,9 +90,6 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: e27b168025f851248a0ad7cfe0a056b7, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 6177772484177396140}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: e27b168025f851248a0ad7cfe0a056b7, type: 3}
-      insertIndex: -1
       addedObject: {fileID: 1314593800519093675}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: e27b168025f851248a0ad7cfe0a056b7, type: 3}
       insertIndex: -1
@@ -103,21 +100,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: e27b168025f851248a0ad7cfe0a056b7, type: 3}
   m_PrefabInstance: {fileID: 1670985952582187956}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &6177772484177396140
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2013637963025024741}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 18fe7554ddb907c4db0177c2818e6da6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::WeaponPickup
-  weaponIndex: 1
-  weaponName: Pistola
-  interactText: {fileID: 0}
 --- !u!65 &1314593800519093675
 BoxCollider:
   m_ObjectHideFlags: 0

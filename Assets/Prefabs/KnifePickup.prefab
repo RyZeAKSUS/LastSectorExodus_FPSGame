@@ -78,9 +78,6 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: f83710963d3d16d4c834ba216acbc913, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 5691207001075183491}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: f83710963d3d16d4c834ba216acbc913, type: 3}
-      insertIndex: -1
       addedObject: {fileID: 1720791877570720247}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: f83710963d3d16d4c834ba216acbc913, type: 3}
       insertIndex: -1
@@ -91,21 +88,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: f83710963d3d16d4c834ba216acbc913, type: 3}
   m_PrefabInstance: {fileID: 603387329748362353}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &5691207001075183491
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 332914828271311136}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 18fe7554ddb907c4db0177c2818e6da6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::WeaponPickup
-  weaponIndex: 0
-  weaponName: Faca
-  interactText: {fileID: 0}
 --- !u!65 &1720791877570720247
 BoxCollider:
   m_ObjectHideFlags: 0
