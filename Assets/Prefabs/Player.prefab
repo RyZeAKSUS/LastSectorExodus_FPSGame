@@ -4405,7 +4405,9 @@ GameObject:
   - component: {fileID: 733478277915180343}
   - component: {fileID: 7802196560448982038}
   - component: {fileID: 8154779954729267966}
-  - component: {fileID: 3754684421064788305}
+  - component: {fileID: 7984513848894908845}
+  - component: {fileID: 8783582493192097474}
+  - component: {fileID: 7013132011857999854}
   m_Layer: 3
   m_Name: Player
   m_TagString: Player
@@ -4488,7 +4490,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
   maxHealth: 100
   healthBar: {fileID: 0}
---- !u!114 &3754684421064788305
+--- !u!114 &7984513848894908845
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -4497,17 +4499,58 @@ MonoBehaviour:
   m_GameObject: {fileID: 7267801636204710368}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: de62353a5fe5f934fb30ec8bdfba2870, type: 3}
+  m_Script: {fileID: 11500000, guid: 3a880e3827074a446bb13ce7b1242f8b, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::QuickInventory
-  startingItems:
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerPickupDetector
+  detectionRadius: 2.5
+  interactText: {fileID: 0}
+--- !u!114 &8783582493192097474
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7267801636204710368}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 395b1711cb6473a4cbfcef643c5b0498, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InventorySystem
+  gunSwitcher: {fileID: 7965229005383803515}
+  inventoryUI: {fileID: 0}
+  handItemHolder: {fileID: 1546830260290174799}
+  weaponDefinitions:
   - {fileID: 11400000, guid: c569d3f8ce389b8489e1f6bc2a5dbfb9, type: 2}
   - {fileID: 11400000, guid: 126bd9acf0a467041b9fe47f60bed852, type: 2}
-  - {fileID: 0}
-  - {fileID: 0}
-  weaponHolder: {fileID: 1546830260290174799}
-  handItemHolder: {fileID: 1546830260290174799}
-  inventoryUI: {fileID: 0}
+  - {fileID: 11400000, guid: 246afebc438bdf3458079662ff705b95, type: 2}
+  - {fileID: 11400000, guid: 5fb24539163fe4c44a45914293a2287d, type: 2}
+  - {fileID: 11400000, guid: b45c74f75d5db3e46b53415a3bc72029, type: 2}
+  cosmeticDefinitions:
+  - {fileID: 11400000, guid: 1ea40f1e534050a4291b1943a03f4d76, type: 2}
+  - {fileID: 11400000, guid: def7d344c9113d8408785bad75c4c930, type: 2}
+  - {fileID: 11400000, guid: cd8050675d4b86d4db3ec16f7c7232d4, type: 2}
+  - {fileID: 11400000, guid: 2d15fcdd9155ea440938855b47f89a68, type: 2}
+  startingWeaponIndices: 0000000001000000
+--- !u!114 &7013132011857999854
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7267801636204710368}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 035310d08273a5c4e921ac6b32c1c17b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HungerThirst
+  maxHunger: 100
+  maxThirst: 100
+  hungerDepletionRate: 3
+  thirstDepletionRate: 6
+  hungerHpDrainRate: 2
+  thirstHpDrainRate: 5
+  hungerBar: {fileID: 0}
+  thirstBar: {fileID: 0}
 --- !u!1 &7452415097641399381
 GameObject:
   m_ObjectHideFlags: 0
@@ -4790,7 +4833,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &7250667935005132989
 Transform:
   m_ObjectHideFlags: 0

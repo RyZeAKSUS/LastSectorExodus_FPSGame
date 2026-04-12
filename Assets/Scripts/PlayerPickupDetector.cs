@@ -9,6 +9,7 @@ public class PlayerPickupDetector : MonoBehaviour
     public TextMeshProUGUI interactText;
 
     private WorldItemPickup _currentPickup;
+    private AmmoBox _currentAmmoBox;
 
     void Update()
     {
@@ -34,14 +35,43 @@ public class PlayerPickupDetector : MonoBehaviour
         }
 
         _currentPickup = FindClosestPickup();
+        _currentAmmoBox = FindClosestAmmoBox();
 
         if (_currentPickup != null)
         {
-            UpdateText();
+            ShowText(
+                !_currentPickup.CanPickup()
+                    ? "Inventário Cheio"
+                    : "F - Apanhar " + _currentPickup.itemDefinition.itemName
+            );
 
             if (Input.GetKeyDown(KeyCode.F))
             {
                 _currentPickup.Pickup();
+            }
+        }
+        else if (_currentAmmoBox != null)
+        {
+            if (!_currentAmmoBox.IsAvailable())
+            {
+                ShowText("Caixa vazia");
+            }
+            else
+            {
+                int activeSlot = InventorySystem.Instance.GetActiveSlot();
+                if (activeSlot <= 0 || activeSlot > 4)
+                {
+                    ShowText("Equipa uma arma primeiro");
+                }
+                else
+                {
+                    ShowText("F - Apanhar munição");
+                }
+            }
+
+            if (Input.GetKeyDown(KeyCode.F))
+            {
+                _currentAmmoBox.Collect();
             }
         }
         else
@@ -85,20 +115,31 @@ public class PlayerPickupDetector : MonoBehaviour
         return closest;
     }
 
-    void UpdateText()
+    AmmoBox FindClosestAmmoBox()
     {
-        if (interactText == null || _currentPickup == null || _currentPickup.itemDefinition == null) return;
+        AmmoBox[] allBoxes = FindObjectsByType<AmmoBox>(FindObjectsSortMode.None);
 
+        AmmoBox closest = null;
+        float closestDist = float.MaxValue;
+
+        foreach (AmmoBox box in allBoxes)
+        {
+            float dist = Vector3.Distance(transform.position, box.transform.position);
+            if (dist < detectionRadius && dist < closestDist)
+            {
+                closestDist = dist;
+                closest = box;
+            }
+        }
+
+        return closest;
+    }
+
+    void ShowText(string message)
+    {
+        if (interactText == null) return;
         interactText.gameObject.SetActive(true);
-
-        if (!_currentPickup.CanPickup())
-        {
-            interactText.text = "Inventário Cheio";
-        }
-        else
-        {
-            interactText.text = "F - Apanhar " + _currentPickup.itemDefinition.itemName;
-        }
+        interactText.text = message;
     }
 
     void HideText()
@@ -112,6 +153,7 @@ public class PlayerPickupDetector : MonoBehaviour
     void ClearAndHide()
     {
         _currentPickup = null;
+        _currentAmmoBox = null;
         HideText();
     }
 }

@@ -1,105 +1,65 @@
 using UnityEngine;
-using TMPro;
 
 public class AmmoBox : MonoBehaviour
 {
     [Header("Configuração")]
     public int ammoAmount = 30;
-    public float respawnTime = 15f;
-    public string interactMessage = "Pressiona F para apanhar munição";
-
-    [Header("Materiais")]
-    public Material fullMaterial;
-    public Material emptyMaterial;
 
     [Header("Referências")]
-    public TextMeshProUGUI interactText;
+    public GameObject lid;
+    public GameObject indicatorPrefab;
 
     private bool _isAvailable = true;
-    private bool _playerNearby = false;
-    private MeshRenderer _meshRenderer;
+    private GameObject _indicator;
 
     void Start()
     {
-        _meshRenderer = GetComponent<MeshRenderer>();
-        if (interactText != null)
+        if (indicatorPrefab != null)
         {
-            interactText.gameObject.SetActive(false);
+            _indicator = Instantiate(
+                indicatorPrefab,
+                transform.position + Vector3.up * 1.5f,
+                Quaternion.identity
+            );
         }
     }
 
     void Update()
     {
-        if (PauseMenu.gameIsPaused) return;
-        if (GameOverMenu.gameOverShowing) return;
-
-        if (!_playerNearby) return;
-
-        UpdateInteractText();
-
-        if (_isAvailable && Input.GetKeyDown(KeyCode.F))
+        if (_indicator != null)
         {
-            Collect();
+            _indicator.transform.position = transform.position + Vector3.up * 1.5f;
         }
     }
 
-    void UpdateInteractText()
+    public bool IsAvailable() => _isAvailable;
+
+    public void Collect()
     {
-        if (interactText == null) return;
+        if (!_isAvailable) return;
 
-        if (_isAvailable)
-        {
-            interactText.text = interactMessage;
-        }
-        else
-        {
-            interactText.text = "Caixa vazia";
-        }
-    }
+        int activeSlot = InventorySystem.Instance.GetActiveSlot();
 
-    void OnTriggerEnter(Collider other)
-    {
-        if (!other.CompareTag("Player")) return;
+        if (activeSlot <= 0 || activeSlot > 4) return;
 
-        _playerNearby = true;
-        if (interactText != null)
-        {
-            interactText.gameObject.SetActive(true);
-        }
+        GunSwitcher gunSwitcher = FindFirstObjectByType<GunSwitcher>();
+        if (gunSwitcher == null) return;
 
-        UpdateInteractText();
-    }
+        Gun activeGun = gunSwitcher.weapons[activeSlot].GetComponent<Gun>();
+        if (activeGun == null) return;
 
-    void OnTriggerExit(Collider other)
-    {
-        if (!other.CompareTag("Player")) return;
-
-        _playerNearby = false;
-        if (interactText != null)
-        {
-            interactText.gameObject.SetActive(false);
-        }
-    }
-
-    void Collect()
-    {
-        Gun activeGun = FindFirstObjectByType<GunSwitcher>()
-                        .weapons[FindFirstObjectByType<GunSwitcher>()._currentWeapon]
-                        .GetComponent<Gun>();
-        if (activeGun != null)
-            activeGun.AddAmmo(ammoAmount);
+        activeGun.AddAmmo(ammoAmount);
 
         _isAvailable = false;
-        _meshRenderer.material = emptyMaterial;
-        UpdateInteractText();
 
-        Invoke(nameof(Respawn), respawnTime);
-    }
+        if (lid != null)
+        {
+            lid.SetActive(false);
+        }
 
-    void Respawn()
-    {
-        _isAvailable = true;
-        _meshRenderer.material = fullMaterial;
-        UpdateInteractText();
+        if (_indicator != null)
+        {
+            Destroy(_indicator);
+        }
     }
 }
