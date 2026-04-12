@@ -38,11 +38,18 @@ public class PauseMenu : MonoBehaviour
     public void Resume()
     {
         pausePanel.SetActive(false);
-        hud.SetActive(true);
         Time.timeScale = 1f;
         gameIsPaused = false;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
+        WaterZone waterZone = FindFirstObjectByType<WaterZone>();
+        bool isDrowning = waterZone != null && waterZone.IsInWater();
+
+        if (!isDrowning)
+        {
+            hud.SetActive(true);
+        }
 
         if (_rewardWasShowing && RewardScreen.Instance != null)
         {

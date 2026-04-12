@@ -3,14 +3,23 @@ using UnityEngine;
 public class Knife : MonoBehaviour
 {
     [Header("Configuração")]
-    public float damage = 75f;
-    public float range = 2.5f;
-    public float attackRate = 0.4f;
+    public float damage = 40f;
+    public float range = 4f;
+    public float attackRate = 0.25f;
+    public float dashForce = 4f;
+    public float dashDuration = 0.1f;
 
     [Header("Referências")]
     public Camera playerCamera;
 
     private float _nextAttackTime;
+    private CharacterController _cc;
+    private bool _isDashing = false;
+
+    void Start()
+    {
+        _cc = GetComponentInParent<CharacterController>();
+    }
 
     void Update()
     {
@@ -28,8 +37,32 @@ public class Knife : MonoBehaviour
         if (Input.GetButtonDown("Fire1") && Time.time >= _nextAttackTime)
         {
             _nextAttackTime = Time.time + attackRate;
-            Attack();
+            StartCoroutine(AttackWithDash());
         }
+    }
+
+    System.Collections.IEnumerator AttackWithDash()
+    {
+        _isDashing = true;
+
+        float elapsed = 0f;
+        Vector3 dashDirection = playerCamera.transform.forward;
+        dashDirection.y = 0f;
+        dashDirection.Normalize();
+
+        while (elapsed < dashDuration)
+        {
+            if (_cc != null)
+            {
+                _cc.Move(dashDirection * dashForce * Time.deltaTime);
+            }
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        _isDashing = false;
+
+        Attack();
     }
 
     void Attack()

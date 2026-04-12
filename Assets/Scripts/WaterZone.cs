@@ -125,4 +125,6 @@ public class WaterZone : MonoBehaviour
             countdownText.text = "AFOGAMENTO EM " + Mathf.CeilToInt(_drowningTimer) + " SEGUNDOS";
         }
     }
+
+    public bool IsInWater() => _inWater;
 }

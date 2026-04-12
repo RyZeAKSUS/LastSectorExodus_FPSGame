@@ -36,7 +36,6 @@ public class PlayerMovement : MonoBehaviour
         if (VictoryMenu.victoryShowing) return;
         if (PauseMenu.gameIsPaused) return;
         if (GameOverMenu.gameOverShowing) return;
-        if (InventorySystem.Instance != null && InventorySystem.Instance.GetIsOpen()) return;
         if (RewardScreen.Instance != null && RewardScreen.Instance.IsShowing()) return;
 
         TrackFall();
@@ -96,16 +95,32 @@ public class PlayerMovement : MonoBehaviour
     {
         float x = Input.GetAxisRaw("Horizontal");
         float z = Input.GetAxisRaw("Vertical");
-        bool isRunning = Input.GetKey(KeyCode.LeftShift);
+        bool wantsToRun = Input.GetKey(KeyCode.LeftShift);
 
         float baseSpeed;
+
         if (_inWater)
         {
             baseSpeed = 2f;
+            StaminaSystem.Instance?.RegenStamina(Time.deltaTime);
+        }
+        else if (wantsToRun && (x != 0f || z != 0f))
+        {
+            bool canRun = StaminaSystem.Instance != null
+                ? StaminaSystem.Instance.ConsumeStamina(Time.deltaTime)
+                : true;
+
+            baseSpeed = canRun ? runSpeed : walkSpeed;
+
+            if (!wantsToRun || !canRun)
+            {
+                StaminaSystem.Instance?.RegenStamina(Time.deltaTime);
+            }
         }
         else
         {
-            baseSpeed = isRunning ? runSpeed : walkSpeed;
+            baseSpeed = walkSpeed;
+            StaminaSystem.Instance?.RegenStamina(Time.deltaTime);
         }
 
         float adrenalineMultiplier = AdrenalineSystem.Instance != null

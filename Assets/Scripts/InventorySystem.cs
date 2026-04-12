@@ -7,7 +7,7 @@ public class InventorySystem : MonoBehaviour
 
     public const int WeaponCount = 5;
     public const int CosmeticCount = 4;
-    public const int MaxCosmeticStack = 5;
+    public const int MaxCosmeticStack = 3;
 
     [Header("Referências")]
     public GunSwitcher gunSwitcher;
