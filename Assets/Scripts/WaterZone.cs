@@ -12,6 +12,7 @@ public class WaterZone : MonoBehaviour
     [Header("Referências UI")]
     public GameObject drowningPanel;
     public TextMeshProUGUI countdownText;
+    public GameObject hud;
 
     private PlayerHealth _playerHealth;
     private PlayerMovement _playerMovement;
@@ -22,6 +23,7 @@ public class WaterZone : MonoBehaviour
     {
         if (!_inWater) return;
         if (GameOverMenu.gameOverShowing) return;
+
         if (PauseMenu.gameIsPaused)
         {
             if (drowningPanel != null)
@@ -88,6 +90,11 @@ public class WaterZone : MonoBehaviour
             drowningPanel.SetActive(true);
         }
 
+        if (hud != null)
+        {
+            hud.SetActive(false);
+        }
+
         UpdateCountdown();
     }
 
@@ -103,6 +110,11 @@ public class WaterZone : MonoBehaviour
         if (drowningPanel != null)
         {
             drowningPanel.SetActive(false);
+        }
+
+        if (hud != null)
+        {
+            hud.SetActive(true);
         }
     }
 

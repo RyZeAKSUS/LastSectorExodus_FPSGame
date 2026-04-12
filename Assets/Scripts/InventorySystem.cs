@@ -153,7 +153,18 @@ public class InventorySystem : MonoBehaviour
         ItemDefinition def = cosmeticDefinitions[cosIdx];
         if (def != null)
         {
-            FindFirstObjectByType<PlayerHealth>()?.Heal(def.healAmount);
+            if (cosIdx == 0 || cosIdx == 1)
+            {
+                FindFirstObjectByType<PlayerHealth>()?.Heal(def.healAmount);
+            }
+            else if (cosIdx == 2)
+            {
+                HungerThirst.Instance?.AddHunger(def.hungerAmount);
+            }
+            else if (cosIdx == 3)
+            {
+                HungerThirst.Instance?.AddThirst(def.thirstAmount);
+            }
         }
 
         _cosmeticCounts[cosIdx]--;
@@ -217,7 +228,6 @@ public class InventorySystem : MonoBehaviour
         {
             if (_weaponOwned[_activeSlot])
             {
-                // Faca (slot 0) não tem UI de ammo
                 if (_activeSlot == 0)
                 {
                     HUDItemInfo.Instance?.Hide();

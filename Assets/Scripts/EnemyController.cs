@@ -12,6 +12,8 @@ public class EnemyController : MonoBehaviour
     public float rageHealthThreshold = 0.5f;
     private bool _rageActivated = false;
 
+    [HideInInspector] public EnemySpawner assignedSpawner;
+
     private NavMeshAgent _agent;
     private float _nextAttackTime;
     private Animator _animator;
@@ -78,36 +80,36 @@ public class EnemyController : MonoBehaviour
             }
         }
 
-        if (isBoss) 
-        { 
-            _maxIdleIndex = 2; 
-            _maxAttackIndex = 3; 
-            _maxWalkIndex = 3; 
+        if (isBoss)
+        {
+            _maxIdleIndex = 2;
+            _maxAttackIndex = 3;
+            _maxWalkIndex = 3;
         }
-        else if (gameObject.name.Contains("Mutant")) 
-        { 
-            _maxIdleIndex = 3; 
-            _maxAttackIndex = 4; 
-            _maxWalkIndex = 5; 
+        else if (gameObject.name.Contains("Mutant"))
+        {
+            _maxIdleIndex = 3;
+            _maxAttackIndex = 4;
+            _maxWalkIndex = 5;
         }
-        else if (gameObject.name.Contains("Arachnid")) 
-        { 
-            _maxIdleIndex = 0; 
-            _maxAttackIndex = 0; 
-            _maxWalkIndex = 4; 
+        else if (gameObject.name.Contains("Arachnid"))
+        {
+            _maxIdleIndex = 0;
+            _maxAttackIndex = 0;
+            _maxWalkIndex = 4;
         }
-        else 
-        { 
-            _maxIdleIndex = 2; 
-            _maxAttackIndex = 1; 
-            _maxWalkIndex = 3; 
+        else
+        {
+            _maxIdleIndex = 2;
+            _maxAttackIndex = 1;
+            _maxWalkIndex = 3;
         }
 
-        if (_hasIdleIndex) 
+        if (_hasIdleIndex)
         {
             _animator.SetInteger("idleIndex", 0);
         }
-        if (_hasWalkIndex) 
+        if (_hasWalkIndex)
         {
             _animator.SetInteger("walkIndex", 0);
         }
@@ -128,7 +130,7 @@ public class EnemyController : MonoBehaviour
             if (_idleTimer >= _idleChangeTime)
             {
                 _idleTimer = 0f;
-                if (_hasIdleIndex) 
+                if (_hasIdleIndex)
                 {
                     _animator.SetInteger("idleIndex", Random.Range(0, _maxIdleIndex + 1));
                 }
@@ -157,7 +159,7 @@ public class EnemyController : MonoBehaviour
                 _isMoving = false;
                 _animator?.SetBool("isWalking", false);
                 if (_hasIsRunning)
-                { 
+                {
                     _animator.SetBool("isRunning", false);
                 }
             }
@@ -176,7 +178,7 @@ public class EnemyController : MonoBehaviour
                 if (isBoss && _rageActivated && _hasIsRunning)
                 {
                     _animator.SetBool("isRunning", true);
-                    if (_hasRunIndex) 
+                    if (_hasRunIndex)
                     {
                         _animator.SetInteger("runIndex", Random.Range(0, 3));
                     }
@@ -184,7 +186,7 @@ public class EnemyController : MonoBehaviour
                 else
                 {
                     _animator?.SetBool("isWalking", true);
-                    if (_hasWalkIndex) 
+                    if (_hasWalkIndex)
                     {
                         _animator.SetInteger("walkIndex", Random.Range(0, _maxWalkIndex + 1));
                     }
@@ -199,7 +201,7 @@ public class EnemyController : MonoBehaviour
             {
                 _idleTimer = 0f;
                 if (_hasIdleIndex)
-                { 
+                {
                     _animator.SetInteger("idleIndex", Random.Range(0, _maxIdleIndex + 1));
                 }
             }
@@ -244,18 +246,21 @@ public class EnemyController : MonoBehaviour
         _isDead = true;
         _agent.SetDestination(transform.position);
         _agent.enabled = false;
+
         if (_hasDeathIndex)
         {
             int maxDeathIndex = isBoss ? 2 : (gameObject.name.Contains("Mutant") ? 3 : 0);
             _animator.SetInteger("deathIndex", Random.Range(0, maxDeathIndex + 1));
         }
         _animator?.SetTrigger("death");
+
         GetComponent<EnemyHealth>().AwardScore();
-        EnemySpawner spawner = FindFirstObjectByType<EnemySpawner>();
-        if (spawner != null) 
+
+        if (assignedSpawner != null)
         {
-            spawner.EnemyDied();
+            assignedSpawner.EnemyDied();
         }
+
         Destroy(gameObject, 3f);
     }
 }

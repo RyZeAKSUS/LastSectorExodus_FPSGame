@@ -4,6 +4,7 @@ public class EnemyHealth : MonoBehaviour
 {
     public EnemyData data;
     public int scoreValue = 10;
+
     private float _currentHealth;
     private EnemyController _controller;
 
@@ -27,7 +28,7 @@ public class EnemyHealth : MonoBehaviour
     {
         if (ScoreManager.Instance != null)
         {
-            ScoreManager.Instance.AddScore(scoreValue);
+            ScoreManager.Instance.RegisterKill(scoreValue);
         }
     }
 

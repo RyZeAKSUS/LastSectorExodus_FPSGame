@@ -18,4 +18,6 @@ MonoBehaviour:
   worldPrefab: {fileID: 1987713744733760, guid: b55df95fa6211964e8ad561501250fac, type: 3}
   pickupPrefab: {fileID: 275698136563373625, guid: c58ea348e1a2f6d448c7036629433a49, type: 3}
   weaponIndex: 1
-  healAmount: 50
+  healAmount: 60
+  hungerAmount: 0
+  thirstAmount: 0

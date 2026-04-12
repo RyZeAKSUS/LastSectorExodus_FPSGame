@@ -1862,12 +1862,12 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 6046803847214104661}
+  - {fileID: 6496324457742042376}
   - {fileID: 6253748035547374026}
+  - {fileID: 1101374840161232792}
   - {fileID: 6621429536254815051}
   - {fileID: 7539269046083151450}
-  - {fileID: 1101374840161232792}
-  - {fileID: 6496324457742042376}
-  - {fileID: 6046803847214104661}
   m_Father: {fileID: 6465201079749684545}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -6189,6 +6189,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ScoreManager
   scoreText: {fileID: 8257379714410640294}
+  comboText: {fileID: 0}
+  multiplierText: {fileID: 0}
+  comboWindow: 3.5
+  maxMultiplier: 4
 --- !u!1 &8059880945754818486
 GameObject:
   m_ObjectHideFlags: 0

@@ -32,16 +32,50 @@ public class PlayerHealth : MonoBehaviour
             _damageOverlay.Flash();
         }
 
+        ScoreManager.Instance?.BreakCombo();
+
         if (_currentHealth <= 0f)
         {
             Die();
         }
     }
 
-    public float GetCurrentHealth()
+    public void TakeDamageRaw(float amount)
     {
-        return _currentHealth;
+        _currentHealth -= amount;
+        _currentHealth = Mathf.Clamp(_currentHealth, 0f, maxHealth);
+        UpdateUI();
+
+        if (_damageOverlay != null)
+        {
+            _damageOverlay.Flash();
+        }
+
+        if (_currentHealth <= 0f)
+        {
+            Die();
+        }
     }
+
+    public void Heal(float amount)
+    {
+        _currentHealth += amount;
+        _currentHealth = Mathf.Clamp(_currentHealth, 0f, maxHealth);
+        UpdateUI();
+    }
+
+    public void IncreaseMaxHealth(float amount)
+    {
+        maxHealth += amount;
+        _currentHealth += amount;
+        if (healthBar != null)
+        {
+            healthBar.maxValue = maxHealth;
+        }
+        UpdateUI();
+    }
+
+    public float GetCurrentHealth() => _currentHealth;
 
     void Die()
     {
@@ -54,12 +88,5 @@ public class PlayerHealth : MonoBehaviour
         {
             healthBar.value = _currentHealth;
         }
-    }
-
-    public void Heal(float amount)
-    {
-        _currentHealth += amount;
-        _currentHealth = Mathf.Clamp(_currentHealth, 0f, maxHealth);
-        UpdateUI();
     }
 }

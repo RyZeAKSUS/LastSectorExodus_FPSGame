@@ -19,6 +19,8 @@ public class ItemDefinition : ScriptableObject
     [Header("Índice do slot")]
     public int weaponIndex = 0;
 
-    [Header("Efeitos ao usar (cosméticos)")]
+    [Header("Efeitos ao usar")]
     public float healAmount = 0f;
+    public float hungerAmount = 0f;
+    public float thirstAmount = 0f;
 }

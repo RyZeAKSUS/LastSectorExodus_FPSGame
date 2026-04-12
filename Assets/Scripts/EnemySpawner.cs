@@ -1,9 +1,12 @@
 using UnityEngine;
 using TMPro;
-using System.Collections.Generic;
+using System.Collections;
 
 public class EnemySpawner : MonoBehaviour
 {
+    [Header("Nome da zona")]
+    public string zoneName = "Zona da Igreja";
+
     [Header("Prefabs por tipo")]
     public GameObject[] scavengerVariants;
     public GameObject[] arachnidVariants;
@@ -14,36 +17,34 @@ public class EnemySpawner : MonoBehaviour
     public Transform player;
 
     [Header("Waves")]
-    public int enemiesPerWave = 4;
+    public int totalWaves = 4;
     public float timeBetweenWaves = 8f;
-    public int totalWaves = 5;
+    public int baseEnemiesPerWave = 4;
 
-    [Header("UI")]
-    public TextMeshProUGUI waveText;
-
-    [Header("Combat Zone")]
+    [Header("Referências")]
+    public CombatZone combatZone;
     public bool activated = false;
 
     private int _currentWave = 0;
     private int _enemiesAlive = 0;
     private bool _waitingForNextWave = false;
-    private bool _gameOver = false;
+    private bool _zoneComplete = false;
 
     void Update()
     {
-        if (!activated || _gameOver) return;
+        if (!activated || _zoneComplete) return;
 
         if (_enemiesAlive <= 0 && !_waitingForNextWave)
         {
             if (_currentWave >= totalWaves)
             {
-                _gameOver = true;
-                FindFirstObjectByType<VictoryMenu>()?.ShowVictory();
+                _zoneComplete = true;
+                OnZoneComplete();
                 return;
             }
+
             _waitingForNextWave = true;
-            UpdateWaveUI("Próxima wave em " + timeBetweenWaves + " segundos");
-            Invoke(nameof(StartWave), timeBetweenWaves);
+            StartCoroutine(WaveCountdown());
         }
     }
 
@@ -54,15 +55,52 @@ public class EnemySpawner : MonoBehaviour
         StartWave();
     }
 
+    IEnumerator WaveCountdown()
+    {
+        float timer = timeBetweenWaves;
+
+        while (timer > 0f)
+        {
+            WaveNotification.Instance?.ShowPersistent(
+                zoneName + " - Próxima wave em " + Mathf.CeilToInt(timer) + " segundos"
+            );
+            timer -= Time.deltaTime;
+            yield return null;
+        }
+
+        _waitingForNextWave = false;
+        StartWave();
+    }
+
     void StartWave()
     {
         _currentWave++;
-        _waitingForNextWave = false;
 
-        int enemiesToSpawn = _currentWave == totalWaves ? 3 : enemiesPerWave + (_currentWave - 1) * 2;
+        int enemiesToSpawn;
+        if (_currentWave == totalWaves)
+        {
+            enemiesToSpawn = 3;
+        }
+        else
+        {
+            enemiesToSpawn = baseEnemiesPerWave + (_currentWave - 1) * 2;
+        }
+
         _enemiesAlive = enemiesToSpawn;
 
-        UpdateWaveUI("Wave " + _currentWave + " / " + totalWaves);
+        WaveNotification.Instance?.Show(
+            zoneName + " - Wave " + _currentWave + "/" + totalWaves
+        );
+
+        if (_currentWave > 1)
+        {
+            PlayerHealth ph = FindFirstObjectByType<PlayerHealth>();
+            if (ph != null && ph.GetCurrentHealth() / ph.maxHealth > 0.75f)
+            {
+                int bonus = 50 * (_currentWave - 1);
+                ScoreManager.Instance?.AddWaveStreakBonus(bonus);
+            }
+        }
 
         for (int i = 0; i < enemiesToSpawn; i++)
         {
@@ -73,9 +111,13 @@ public class EnemySpawner : MonoBehaviour
             GameObject prefab = ChoosePrefab();
             GameObject enemy = Instantiate(prefab, spawnPos, spawnPoint.rotation);
             EnemyController ctrl = enemy.GetComponent<EnemyController>();
-            ctrl.player = player;
 
-            StartCoroutine(ActivateAfterDelay(ctrl, i * 0.2f));
+            if (ctrl != null)
+            {
+                ctrl.player = player;
+                ctrl.assignedSpawner = this;
+                StartCoroutine(ActivateAfterDelay(ctrl, i * 0.2f));
+            }
         }
     }
 
@@ -96,42 +138,27 @@ public class EnemySpawner : MonoBehaviour
             float r = Random.value;
             pool = r < 0.33f ? scavengerVariants : r < 0.66f ? arachnidVariants : mutantVariants;
         }
-        else if (_currentWave == 4)
-        {
-            float r = Random.value;
-            pool = r < 0.33f ? scavengerVariants : r < 0.66f ? arachnidVariants : mutantVariants;
-        }
         else
         {
-            if (Random.value < 0.3f)
-            {
-                pool = bossVariants;
-            }
-            else
-            {
-                float r = Random.value;
-                pool = r < 0.33f ? scavengerVariants : r < 0.66f ? arachnidVariants : mutantVariants;
-            }
+            pool = Random.value < 0.5f ? bossVariants : mutantVariants;
         }
 
         return pool[Random.Range(0, pool.Length)];
     }
 
-    System.Collections.IEnumerator ActivateAfterDelay(EnemyController ctrl, float delay)
+    IEnumerator ActivateAfterDelay(EnemyController ctrl, float delay)
     {
         yield return new WaitForSeconds(delay);
-        if (ctrl != null) 
+        if (ctrl != null)
         {
             ctrl.Activate();
         }
     }
 
-    void UpdateWaveUI(string text)
+    void OnZoneComplete()
     {
-        if (waveText != null) 
-        {    
-            waveText.text = text;
-        }
+        WaveNotification.Instance?.Show(zoneName + " - Concluída!");
+        combatZone?.OnZoneComplete();
     }
 
     public void EnemyDied() => _enemiesAlive--;
