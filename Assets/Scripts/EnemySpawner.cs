@@ -21,6 +21,9 @@ public class EnemySpawner : MonoBehaviour
     public float timeBetweenWaves = 8f;
     public int baseEnemiesPerWave = 4;
 
+    [Header("Drops ao completar a zona")]
+    public ItemDefinition[] zoneDropItems;
+
     [Header("Referências")]
     public CombatZone combatZone;
     public bool activated = false;
@@ -57,6 +60,18 @@ public class EnemySpawner : MonoBehaviour
 
     IEnumerator WaveCountdown()
     {
+        if (LevelSystem.Instance != null && LevelSystem.Instance.HasPendingReward())
+        {
+            LevelSystem.Instance.TryShowPendingReward();
+
+            while (RewardScreen.Instance != null && RewardScreen.Instance.IsShowing())
+            {
+                yield return null;
+            }
+
+            yield return new WaitForSeconds(0.5f);
+        }
+
         float timer = timeBetweenWaves;
 
         while (timer > 0f)
@@ -158,7 +173,36 @@ public class EnemySpawner : MonoBehaviour
     void OnZoneComplete()
     {
         WaveNotification.Instance?.Show(zoneName + " - Concluída!");
+        SpawnZoneDrops();
         combatZone?.OnZoneComplete();
+    }
+
+    void SpawnZoneDrops()
+    {
+        if (zoneDropItems == null || zoneDropItems.Length == 0) return;
+
+        for (int i = 0; i < zoneDropItems.Length; i++)
+        {
+            ItemDefinition item = zoneDropItems[i];
+            if (item == null || item.pickupPrefab == null) continue;
+
+            Transform spawnPoint = spawnPoints[0];
+            Vector3 offset = new Vector3(
+                Random.Range(-2f, 2f),
+                0f,
+                Random.Range(-2f, 2f)
+            );
+            Vector3 spawnPos = spawnPoint.position + offset;
+
+            Vector3 rayOrigin = spawnPos + Vector3.up * 5f;
+            if (Physics.Raycast(rayOrigin, Vector3.down, out RaycastHit hit, 20f,
+                Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
+            {
+                spawnPos.y = hit.point.y + 0.1f;
+            }
+
+            Instantiate(item.pickupPrefab, spawnPos, item.pickupPrefab.transform.rotation);
+        }
     }
 
     public void EnemyDied() => _enemiesAlive--;

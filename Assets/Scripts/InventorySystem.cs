@@ -95,6 +95,8 @@ public class InventorySystem : MonoBehaviour
 
     void HandleScroll()
     {
+        if (RewardScreen.Instance != null && RewardScreen.Instance.IsShowing()) return;
+
         float scroll = Input.GetAxis("Mouse ScrollWheel");
         if (scroll == 0f) return;
 

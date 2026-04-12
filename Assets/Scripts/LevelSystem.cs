@@ -10,8 +10,9 @@ public class LevelSystem : MonoBehaviour
     public int baseXPPerLevel = 100;
     public float xpScalingFactor = 1.5f;
     public float hpBonusPerLevel = 0.1f;
+    public int levelsPerReward = 10;
 
-    [Header("UI - canto superior esquerdo")]
+    [Header("UI")]
     public Slider xpBar;
     public TextMeshProUGUI levelText;
 
@@ -19,6 +20,8 @@ public class LevelSystem : MonoBehaviour
     private float _currentXP = 0f;
     private float _xpToNextLevel;
     private PlayerHealth _playerHealth;
+    private bool _rewardPending = false;
+    private int _pendingRewardLevel = 0;
 
     void Awake()
     {
@@ -61,7 +64,23 @@ public class LevelSystem : MonoBehaviour
         }
 
         WaveNotification.Instance?.Show("Nível " + _currentLevel + "!");
+
+        if (_currentLevel % levelsPerReward == 0)
+        {
+            _rewardPending = true;
+            _pendingRewardLevel = _currentLevel;
+        }
     }
+
+    public void TryShowPendingReward()
+    {
+        if (!_rewardPending) return;
+
+        _rewardPending = false;
+        RewardScreen.Instance?.Show(_pendingRewardLevel);
+    }
+
+    public bool HasPendingReward() => _rewardPending;
 
     void UpdateUI()
     {
@@ -76,4 +95,10 @@ public class LevelSystem : MonoBehaviour
             levelText.text = "Nível " + _currentLevel;
         }
     }
+
+    // TESTE — apagar antes da entrega
+    public void DEBUG_ForceReward()
+    {
+        RewardScreen.Instance?.Show(_currentLevel);
+    }    
 }

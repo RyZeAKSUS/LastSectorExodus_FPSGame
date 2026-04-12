@@ -13,6 +13,7 @@ public class PlayerLook : MonoBehaviour
         if (PauseMenu.gameIsPaused) return;
         if (GameOverMenu.gameOverShowing) return;
         if (InventorySystem.Instance != null && InventorySystem.Instance.GetIsOpen()) return;
+        if (RewardScreen.Instance != null && RewardScreen.Instance.IsShowing()) return;
 
         float mouseX = Input.GetAxisRaw("Mouse X") * mouseSensitivity;
         float mouseY = Input.GetAxisRaw("Mouse Y") * mouseSensitivity;

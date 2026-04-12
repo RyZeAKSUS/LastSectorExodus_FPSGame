@@ -34,12 +34,31 @@ public class AmmoBox : MonoBehaviour
 
     public bool IsAvailable() => _isAvailable;
 
+    public bool IsAmmoFull()
+    {
+        if (InventorySystem.Instance == null) return true;
+
+        int activeSlot = InventorySystem.Instance.GetActiveSlot();
+        if (activeSlot <= 0 || activeSlot > 4) return true;
+
+        GunSwitcher gunSwitcher = FindFirstObjectByType<GunSwitcher>();
+        if (gunSwitcher == null) return true;
+
+        Gun activeGun = gunSwitcher.weapons[activeSlot].GetComponent<Gun>();
+        if (activeGun == null) return true;
+
+        int totalCapacity = activeGun.magazineSize + activeGun.maxReserveAmmo;
+        int currentTotal = activeGun.GetBulletsLeft() + activeGun.reserveAmmo;
+        return currentTotal >= totalCapacity;
+    }
+
     public void Collect()
     {
         if (!_isAvailable) return;
 
-        int activeSlot = InventorySystem.Instance.GetActiveSlot();
+        if (InventorySystem.Instance == null) return;
 
+        int activeSlot = InventorySystem.Instance.GetActiveSlot();
         if (activeSlot <= 0 || activeSlot > 4) return;
 
         GunSwitcher gunSwitcher = FindFirstObjectByType<GunSwitcher>();
@@ -49,6 +68,7 @@ public class AmmoBox : MonoBehaviour
         if (activeGun == null) return;
 
         activeGun.AddAmmo(ammoAmount);
+        activeGun.ForceUpdateUI();
 
         _isAvailable = false;
 

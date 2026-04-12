@@ -36,6 +36,8 @@ public class PlayerMovement : MonoBehaviour
         if (VictoryMenu.victoryShowing) return;
         if (PauseMenu.gameIsPaused) return;
         if (GameOverMenu.gameOverShowing) return;
+        if (InventorySystem.Instance != null && InventorySystem.Instance.GetIsOpen()) return;
+        if (RewardScreen.Instance != null && RewardScreen.Instance.IsShowing()) return;
 
         TrackFall();
         GroundCheck();

@@ -60,6 +60,7 @@ public class Gun : MonoBehaviour
         if (GameOverMenu.gameOverShowing) return;
         if (VictoryMenu.victoryShowing) return;
         if (InventorySystem.Instance != null && InventorySystem.Instance.GetIsOpen()) return;
+        if (RewardScreen.Instance != null && RewardScreen.Instance.IsShowing()) return;
         if (_isReloading) return;
 
         if (fireMode == FireMode.Automatic)
@@ -97,10 +98,16 @@ public class Gun : MonoBehaviour
         UpdateAmmoUI();
 
         Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
-        Vector3 targetPoint = Physics.Raycast(ray, out RaycastHit hit, range) ? hit.point : ray.GetPoint(range);
+        Vector3 targetPoint = Physics.Raycast(ray, out RaycastHit hit, range)
+            ? hit.point
+            : ray.GetPoint(range);
 
         Vector3 direction = (targetPoint - muzzlePoint.position).normalized;
-        GameObject bullet = Instantiate(bulletPrefab, muzzlePoint.position, Quaternion.LookRotation(direction));
+        GameObject bullet = Instantiate(
+            bulletPrefab,
+            muzzlePoint.position,
+            Quaternion.LookRotation(direction)
+        );
         bullet.GetComponent<Bullet>().damage = damage;
     }
 
@@ -159,7 +166,11 @@ public class Gun : MonoBehaviour
 
     public void AddAmmo(int amount)
     {
-        reserveAmmo = Mathf.Min(reserveAmmo + amount, maxReserveAmmo);
+        int totalCapacity = magazineSize + maxReserveAmmo;
+        int currentTotal = _bulletsLeft + reserveAmmo;
+        int canAdd = totalCapacity - currentTotal;
+
+        reserveAmmo += Mathf.Min(amount, canAdd);
         UpdateAmmoUI();
     }
 
@@ -196,4 +207,6 @@ public class Gun : MonoBehaviour
             }
         }
     }
+
+    public int GetBulletsLeft() => _bulletsLeft;
 }

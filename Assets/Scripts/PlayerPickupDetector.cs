@@ -33,6 +33,11 @@ public class PlayerPickupDetector : MonoBehaviour
             ClearAndHide();
             return;
         }
+        if (RewardScreen.Instance != null && RewardScreen.Instance.IsShowing())
+        {
+            ClearAndHide();
+            return;
+        }
 
         _currentPickup = FindClosestPickup();
         _currentAmmoBox = FindClosestAmmoBox();
@@ -63,6 +68,10 @@ public class PlayerPickupDetector : MonoBehaviour
                 {
                     ShowText("Equipa uma arma primeiro");
                 }
+                else if (_currentAmmoBox.IsAmmoFull())
+                {
+                    ShowText("Munição cheia");
+                }
                 else
                 {
                     ShowText("F - Apanhar munição");
@@ -71,7 +80,10 @@ public class PlayerPickupDetector : MonoBehaviour
 
             if (Input.GetKeyDown(KeyCode.F))
             {
-                _currentAmmoBox.Collect();
+                if (_currentAmmoBox.IsAvailable() && !_currentAmmoBox.IsAmmoFull())
+                {
+                    _currentAmmoBox.Collect();
+                }
             }
         }
         else

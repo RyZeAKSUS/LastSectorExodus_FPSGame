@@ -149,4 +149,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WorldItemPickup
   itemDefinition: {fileID: 11400000, guid: 1ea40f1e534050a4291b1943a03f4d76, type: 2}
-  interactText: {fileID: 0}
+  indicatorPrefab: {fileID: 3193877167690452560, guid: b88857739348c9043936779ed999ce2b, type: 3}

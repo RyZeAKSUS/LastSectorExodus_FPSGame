@@ -7,12 +7,12 @@ public class InventoryUI : MonoBehaviour
     [Header("Painel")]
     public GameObject panel;
 
-    [Header("Cruz Esquerda — Armas")]
+    [Header("Cruz Esquerda - Armas")]
     public Image[] weaponSlotBGs = new Image[5];
     public Image[] weaponSlotIcons = new Image[5];
     public TextMeshProUGUI[] weaponHotkeyLabels = new TextMeshProUGUI[5];
 
-    [Header("Cruz Direita — Cosméticos")]
+    [Header("Cruz Direita - Cosméticos")]
     public Image[] cosmeticSlotBGs = new Image[4];
     public Image[] cosmeticSlotIcons = new Image[4];
     public TextMeshProUGUI[] cosmeticHotkeyLabels = new TextMeshProUGUI[4];
