@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ItemDefinition
   itemName: Comida Enlatada
   category: 2
-  icon: {fileID: 21300000, guid: f9173b82707470545a6ba06db44ba1df, type: 3}
+  icon: {fileID: 21300000, guid: 1d8853fdcfafa244cb34ff334c06cdfd, type: 3}
   worldPrefab: {fileID: 1896720402374228, guid: baa8d2066558c9a4ebcd1853c4c3ac4e, type: 3}
   pickupPrefab: {fileID: 6866350401616532254, guid: d0d6032f87eba22429db64ad3735ae9f, type: 3}
+  weaponIndex: 2
   healAmount: 20
-  weaponIndex: -1

@@ -16,7 +16,9 @@ public class ItemDefinition : ScriptableObject
     [Header("Pickup (aparece no chão)")]
     public GameObject pickupPrefab;
 
-    [Header("Efeitos ao usar")]
+    [Header("Índice do slot")]
+    public int weaponIndex = 0;
+
+    [Header("Efeitos ao usar (cosméticos)")]
     public float healAmount = 0f;
-    public int weaponIndex = -1;
 }

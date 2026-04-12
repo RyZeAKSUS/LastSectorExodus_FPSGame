@@ -1,91 +1,64 @@
 using UnityEngine;
-using TMPro;
-using Unity.Mathematics;
 
 public class WorldItemPickup : MonoBehaviour
 {
     public ItemDefinition itemDefinition;
-    public TextMeshProUGUI interactText;
+    public GameObject indicatorPrefab;
 
-    private bool _playerNearby = false;
+    private Vector3 _myPosition;
+    private GameObject _indicator;
 
     void Start()
     {
-        if (interactText != null)
+        _myPosition = transform.position;
+
+        if (indicatorPrefab != null)
         {
-            interactText.gameObject.SetActive(false);
+            _indicator = Instantiate(
+                indicatorPrefab,
+                transform.position + Vector3.up * 1.5f,
+                Quaternion.identity
+            );
+            _indicator.transform.SetParent(transform);
         }
     }
 
-    void Update()
+    public bool CanPickup()
     {
-        if (!_playerNearby) return;
-        if (PauseMenu.gameIsPaused) return;
-        if (GameOverMenu.gameOverShowing) return;
-        if (QuickInventory.Instance != null && QuickInventory.Instance.GetInventoryOpen()) return;
+        if (itemDefinition == null || InventorySystem.Instance == null) return false;
 
-        UpdatePromptText();
-
-        if (Input.GetKeyDown(KeyCode.F))
+        if (itemDefinition.category == ItemCategory.Weapon)
         {
-            TryPickup();
-        }
-    }
-
-    void UpdatePromptText()
-    {
-        if (interactText == null || itemDefinition == null) return;
-
-        bool isFull = QuickInventory.Instance != null && QuickInventory.Instance.InventoryFull();
-
-        if (isFull)
-        {
-            ItemDefinition activeItem = QuickInventory.Instance.GetActiveItem();
-            string activeName = activeItem != null ? activeItem.itemName : "item atual";
-            interactText.text = "F - Trocar " + activeName + " por " + itemDefinition.itemName;
+            return InventorySystem.Instance.CanPickupWeapon(itemDefinition.weaponIndex);
         }
         else
         {
-            interactText.text = "F - Apanhar " + itemDefinition.itemName;
+            return InventorySystem.Instance.CanPickupCosmetic(itemDefinition.weaponIndex);
         }
     }
 
-    void TryPickup()
+    public void Pickup()
     {
-        if (itemDefinition == null) return;
-        if (QuickInventory.Instance == null) return;
+        if (itemDefinition == null || InventorySystem.Instance == null) return;
 
-        PickupResult result = QuickInventory.Instance.TryPickup(itemDefinition, transform.position);
+        bool success = false;
 
-        if (result.success)
+        if (itemDefinition.category == ItemCategory.Weapon)
         {
-            if (result.displaced != null && result.displaced.pickupPrefab != null)
+            success = InventorySystem.Instance.TryPickupWeapon(itemDefinition.weaponIndex);
+        }
+        else
+        {
+            success = InventorySystem.Instance.TryPickupCosmetic(itemDefinition.weaponIndex);
+        }
+
+        if (success)
+        {
+            if (_indicator != null)
             {
-                Instantiate(result.displaced.pickupPrefab, transform.position, transform.rotation);
+                Destroy(_indicator);
             }
-
             Destroy(gameObject);
-        }
-    }
-
-    void OnTriggerEnter(Collider other)
-    {
-        if (!other.CompareTag("Player")) return;
-        _playerNearby = true;
-        if (interactText != null)
-        {
-            interactText.gameObject.SetActive(true);
-            UpdatePromptText();
-        }
-    }
-
-    void OnTriggerExit(Collider other)
-    {
-        if (!other.CompareTag("Player")) return;
-        _playerNearby = false;
-        if (interactText != null)
-        {
-            interactText.gameObject.SetActive(false);
         }
     }
 }

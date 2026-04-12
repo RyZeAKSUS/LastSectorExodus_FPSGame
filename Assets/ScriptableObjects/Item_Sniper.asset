@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 32d23d97f46c50540a4a66c296794146, type: 3}
   m_Name: Item_Sniper
   m_EditorClassIdentifier: Assembly-CSharp::ItemDefinition
-  itemName: Rifle
+  itemName: Sniper
   category: 0
-  icon: {fileID: 21300000, guid: c11f8531e48a9a9468cceefcbb9b0ea3, type: 3}
+  icon: {fileID: 21300000, guid: 4b779d3c4fca8c2439d3f3712a47bfcc, type: 3}
   worldPrefab: {fileID: 1680187361931583328, guid: 945c292cf1eda8b41aba3e07f8ca2892, type: 3}
   pickupPrefab: {fileID: 7053051166419310737, guid: 1e3f8d2f63de8e844b427034d10489fd, type: 3}
-  healAmount: 0
   weaponIndex: 4
+  healAmount: 0

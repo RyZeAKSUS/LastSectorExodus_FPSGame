@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ItemDefinition
   itemName: Comprimidos
   category: 1
-  icon: {fileID: 21300000, guid: 88aedae75fa5f64409ed1140f5674ccd, type: 3}
+  icon: {fileID: 21300000, guid: 2670ae31d2ad0e340835617a07763a39, type: 3}
   worldPrefab: {fileID: 1985338178271116, guid: 48ec186542777474bb236dff1694340c, type: 3}
   pickupPrefab: {fileID: 8567993723658421202, guid: d847c65664ef49741a32215db444d91b, type: 3}
+  weaponIndex: 0
   healAmount: 25
-  weaponIndex: -1

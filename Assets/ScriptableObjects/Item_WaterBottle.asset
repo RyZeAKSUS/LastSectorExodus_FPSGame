@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ItemDefinition
   itemName: "Garrafa de \xC1gua"
   category: 2
-  icon: {fileID: 21300000, guid: 12bc188c998d1b147be6efd4457bf5ae, type: 3}
+  icon: {fileID: 21300000, guid: 8ed08bbe8f9ecbc449bb727cb6422931, type: 3}
   worldPrefab: {fileID: 1216505430168376, guid: 57e3542e6c16dfd40972c0b1b0899afb, type: 3}
   pickupPrefab: {fileID: 4199207126138260721, guid: 3f15ab9c300f55b4b850a588a375dc49, type: 3}
+  weaponIndex: 3
   healAmount: 15
-  weaponIndex: -1

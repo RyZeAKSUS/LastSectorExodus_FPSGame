@@ -59,6 +59,7 @@ public class Gun : MonoBehaviour
         if (PauseMenu.gameIsPaused) return;
         if (GameOverMenu.gameOverShowing) return;
         if (VictoryMenu.victoryShowing) return;
+        if (InventorySystem.Instance != null && InventorySystem.Instance.GetIsOpen()) return;
         if (_isReloading) return;
 
         if (fireMode == FireMode.Automatic)
@@ -186,9 +187,13 @@ public class Gun : MonoBehaviour
         {
             fireModeText.gameObject.SetActive(true);
             if (fireMode == FireMode.Automatic)
+            {
                 fireModeText.text = "<color=#FFD700>Automático</color>  |  Manual";
+            }
             else
+            {
                 fireModeText.text = "Automático  |  <color=#FFD700>Manual</color>";
+            }
         }
     }
 }

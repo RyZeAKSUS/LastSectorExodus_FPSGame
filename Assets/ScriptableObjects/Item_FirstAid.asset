@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ItemDefinition
   itemName: "Kit M\xE9dico"
   category: 1
-  icon: {fileID: 21300000, guid: 4be9ad55d11013c4eb09be0af8d0a4f4, type: 3}
+  icon: {fileID: 21300000, guid: e7be928a8949d3748958ffd7e73f108e, type: 3}
   worldPrefab: {fileID: 1987713744733760, guid: b55df95fa6211964e8ad561501250fac, type: 3}
   pickupPrefab: {fileID: 275698136563373625, guid: c58ea348e1a2f6d448c7036629433a49, type: 3}
+  weaponIndex: 1
   healAmount: 50
-  weaponIndex: -1

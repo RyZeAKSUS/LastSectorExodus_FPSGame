@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ItemDefinition
   itemName: Pistola
   category: 0
-  icon: {fileID: 21300000, guid: c89d19dded20b8a4e900c4154e141fd1, type: 3}
+  icon: {fileID: 21300000, guid: 8298d092bf63941489d99825981d4faa, type: 3}
   worldPrefab: {fileID: 8552251479144847177, guid: 853547bb5f2f57144b9dbd6bf6d12619, type: 3}
-  pickupPrefab: {fileID: 2013637963025024741, guid: 4183a43f47115f448baaae1f3e90b6b2, type: 3}
-  healAmount: 0
+  pickupPrefab: {fileID: 1906364673011455226, guid: 4183a43f47115f448baaae1f3e90b6b2, type: 3}
   weaponIndex: 1
+  healAmount: 0

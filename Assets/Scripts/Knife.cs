@@ -22,6 +22,7 @@ public class Knife : MonoBehaviour
         if (PauseMenu.gameIsPaused) return;
         if (GameOverMenu.gameOverShowing) return;
         if (VictoryMenu.victoryShowing) return;
+        if (InventorySystem.Instance != null && InventorySystem.Instance.GetIsOpen()) return;
 
         if (Input.GetButtonDown("Fire1") && Time.time >= _nextAttackTime)
         {

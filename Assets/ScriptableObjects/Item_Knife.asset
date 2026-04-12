@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ItemDefinition
   itemName: Faca
   category: 0
-  icon: {fileID: 21300000, guid: 9ce286465092f714a8b597eed1ed42ce, type: 3}
+  icon: {fileID: 21300000, guid: c124f64e0f194ca41997c9fc10af8d50, type: 3}
   worldPrefab: {fileID: 2456186492758868597, guid: 1404b1f6ca323e54fa4b4bc7074968cc, type: 3}
-  pickupPrefab: {fileID: 332914828271311136, guid: 0ba2195579ff9be42ad4151c3d6fd80f, type: 3}
-  healAmount: 0
+  pickupPrefab: {fileID: 4189819283729479606, guid: 0ba2195579ff9be42ad4151c3d6fd80f, type: 3}
   weaponIndex: 0
+  healAmount: 0
