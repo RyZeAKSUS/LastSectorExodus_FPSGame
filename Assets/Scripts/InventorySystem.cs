@@ -21,9 +21,6 @@ public class InventorySystem : MonoBehaviour
     [Header("Armas iniciais (índices)")]
     public int[] startingWeaponIndices = { 0, 1 };
 
-    [Header("HUD Cosméticos")]
-    public TextMeshProUGUI cosmeticCountText;
-
     private bool[] _weaponOwned = new bool[WeaponCount];
     private int[] _cosmeticCounts = new int[CosmeticCount];
     private int _activeSlot = 0;
@@ -102,14 +99,12 @@ public class InventorySystem : MonoBehaviour
         if (scroll == 0f) return;
 
         int direction = scroll > 0f ? -1 : 1;
-
         int totalSlots = WeaponCount + CosmeticCount;
         int next = _activeSlot;
 
         for (int i = 0; i < totalSlots; i++)
         {
             next = (next + direction + totalSlots) % totalSlots;
-
             if (SlotHasItem(next))
             {
                 TryEquipSlot(next);
@@ -130,7 +125,7 @@ public class InventorySystem : MonoBehaviour
         }
     }
 
-    void TryEquipSlot(int slot)
+    public void TryEquipSlot(int slot)
     {
         if (slot < 5)
         {
@@ -169,7 +164,7 @@ public class InventorySystem : MonoBehaviour
         }
         else
         {
-            UpdateCosmeticHUD();
+            HUDItemInfo.Instance?.UpdateCosmeticCount(_cosmeticCounts[cosIdx], MaxCosmeticStack);
             inventoryUI?.Refresh(this);
         }
     }
@@ -191,7 +186,7 @@ public class InventorySystem : MonoBehaviour
         gunSwitcher?.HideAllWeapons();
         gunSwitcher?.ClearAllGunUI();
         DestroyHandCosmetic();
-        UpdateCosmeticHUD();
+        HUDItemInfo.Instance?.Hide();
         inventoryUI?.Refresh(this);
     }
 
@@ -222,6 +217,15 @@ public class InventorySystem : MonoBehaviour
         {
             if (_weaponOwned[_activeSlot])
             {
+                // Faca (slot 0) não tem UI de ammo
+                if (_activeSlot == 0)
+                {
+                    HUDItemInfo.Instance?.Hide();
+                }
+                else
+                {
+                    HUDItemInfo.Instance?.ShowGun();
+                }
                 gunSwitcher?.EquipWeaponPublic(_activeSlot);
             }
         }
@@ -230,6 +234,8 @@ public class InventorySystem : MonoBehaviour
             int cosIdx = _activeSlot - 5;
             if (_cosmeticCounts[cosIdx] > 0)
             {
+                HUDItemInfo.Instance?.ShowCosmetic(_cosmeticCounts[cosIdx], MaxCosmeticStack);
+
                 ItemDefinition def = cosmeticDefinitions[cosIdx];
                 if (def != null && def.worldPrefab != null && handItemHolder != null)
                 {
@@ -240,8 +246,6 @@ public class InventorySystem : MonoBehaviour
                 }
             }
         }
-
-        UpdateCosmeticHUD();
     }
 
     void DestroyHandCosmetic()
@@ -250,22 +254,6 @@ public class InventorySystem : MonoBehaviour
         {
             Destroy(_handCosmetic);
             _handCosmetic = null;
-        }
-    }
-
-    void UpdateCosmeticHUD()
-    {
-        if (cosmeticCountText == null) return;
-
-        if (_activeSlot >= 5)
-        {
-            int cosIdx = _activeSlot - 5;
-            cosmeticCountText.gameObject.SetActive(true);
-            cosmeticCountText.text = _cosmeticCounts[cosIdx] + " / " + MaxCosmeticStack;
-        }
-        else
-        {
-            cosmeticCountText.gameObject.SetActive(false);
         }
     }
 
@@ -300,7 +288,7 @@ public class InventorySystem : MonoBehaviour
 
         if (_activeSlot == cosmeticIndex + 5)
         {
-            UpdateCosmeticHUD();
+            HUDItemInfo.Instance?.UpdateCosmeticCount(_cosmeticCounts[cosmeticIndex], MaxCosmeticStack);
         }
 
         inventoryUI?.Refresh(this);
