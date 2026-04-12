@@ -33,6 +33,7 @@ public class PlayerHealth : MonoBehaviour
         }
 
         ScoreManager.Instance?.BreakCombo();
+        AdrenalineSystem.Instance?.OnPlayerDamaged();
 
         if (_currentHealth <= 0f)
         {

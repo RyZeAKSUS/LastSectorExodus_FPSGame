@@ -60,6 +60,12 @@ public class ScoreManager : MonoBehaviour
 
         LevelSystem.Instance?.AddXP(earned);
 
+        if (AdrenalineSystem.Instance != null)
+        {
+            float adrenalineGain = AdrenalineSystem.Instance.adrenalinePerKill * _multiplier;
+            AdrenalineSystem.Instance.AddAdrenaline(adrenalineGain);
+        }
+
         UpdateUI();
     }
 

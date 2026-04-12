@@ -70,12 +70,10 @@ public class PlayerMovement : MonoBehaviour
         if (_isGrounded && !_wasGrounded && _isFalling && !_inWater)
         {
             float fallDistance = _highestY - transform.position.y;
-            Debug.Log("Distância de queda: " + fallDistance);
 
             if (fallDistance > fallDamageThreshold)
             {
                 float damage = (fallDistance - fallDamageThreshold) * fallDamageMultiplier;
-                Debug.Log("Dano de queda: " + damage);
                 GetComponent<PlayerHealth>().TakeDamage(damage);
             }
 
@@ -100,15 +98,21 @@ public class PlayerMovement : MonoBehaviour
         float z = Input.GetAxisRaw("Vertical");
         bool isRunning = Input.GetKey(KeyCode.LeftShift);
 
-        float speed;
+        float baseSpeed;
         if (_inWater)
         {
-            speed = 2f;
+            baseSpeed = 2f;
         }
         else
         {
-            speed = isRunning ? runSpeed : walkSpeed;
+            baseSpeed = isRunning ? runSpeed : walkSpeed;
         }
+
+        float adrenalineMultiplier = AdrenalineSystem.Instance != null
+            ? AdrenalineSystem.Instance.GetSpeedMultiplier()
+            : 1f;
+
+        float speed = baseSpeed * adrenalineMultiplier;
 
         Vector3 move = transform.right * x + transform.forward * z;
         _cc.Move(move * speed * Time.deltaTime);

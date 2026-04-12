@@ -211,7 +211,7 @@ public class EnemyController : MonoBehaviour
     public void Activate()
     {
         _isActive = true;
-        if (_agent != null)
+        if (_agent != null && _agent.isOnNavMesh)
         {
             _agent.isStopped = false;
         }

@@ -8,17 +8,9 @@ public class HungerThirst : MonoBehaviour
     [Header("Configuração")]
     public float maxHunger = 100f;
     public float maxThirst = 100f;
-
-    [Tooltip("Unidades por minuto")]
     public float hungerDepletionRate = 3f;
-
-    [Tooltip("Unidades por minuto - desce mais rápido que a fome")]
     public float thirstDepletionRate = 6f;
-
-    [Tooltip("HP drenado por segundo quando a fome chega a zero")]
     public float hungerHpDrainRate = 2f;
-
-    [Tooltip("HP drenado por segundo quando a sede chega a zero")]
     public float thirstHpDrainRate = 5f;
 
     [Header("UI")]
@@ -62,21 +54,29 @@ public class HungerThirst : MonoBehaviour
         if (PauseMenu.gameIsPaused) return;
         if (GameOverMenu.gameOverShowing) return;
         if (VictoryMenu.victoryShowing) return;
+        if (InventorySystem.Instance != null && InventorySystem.Instance.GetIsOpen()) return;
+        if (RewardScreen.Instance != null && RewardScreen.Instance.IsShowing()) return;
 
-        _hunger -= hungerDepletionRate / 60f * Time.deltaTime;
-        _thirst -= thirstDepletionRate / 60f * Time.deltaTime;
+        bool adrenalinePaused = AdrenalineSystem.Instance != null
+            && AdrenalineSystem.Instance.HungerThirstPaused();
 
-        _hunger = Mathf.Clamp(_hunger, 0f, maxHunger);
-        _thirst = Mathf.Clamp(_thirst, 0f, maxThirst);
-
-        if (_hunger <= 0f)
+        if (!adrenalinePaused)
         {
-            _playerHealth?.TakeDamageRaw(hungerHpDrainRate * Time.deltaTime);
-        }
+            _hunger -= hungerDepletionRate / 60f * Time.deltaTime;
+            _thirst -= thirstDepletionRate / 60f * Time.deltaTime;
 
-        if (_thirst <= 0f)
-        {
-            _playerHealth?.TakeDamageRaw(thirstHpDrainRate * Time.deltaTime);
+            _hunger = Mathf.Clamp(_hunger, 0f, maxHunger);
+            _thirst = Mathf.Clamp(_thirst, 0f, maxThirst);
+
+            if (_hunger <= 0f)
+            {
+                _playerHealth?.TakeDamageRaw(hungerHpDrainRate * Time.deltaTime);
+            }
+
+            if (_thirst <= 0f)
+            {
+                _playerHealth?.TakeDamageRaw(thirstHpDrainRate * Time.deltaTime);
+            }
         }
 
         UpdateUI();
