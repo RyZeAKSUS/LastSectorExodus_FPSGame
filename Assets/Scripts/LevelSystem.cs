@@ -94,11 +94,5 @@ public class LevelSystem : MonoBehaviour
         {
             levelText.text = "Nível " + _currentLevel;
         }
-    }
-
-    // TESTE — apagar antes da entrega
-    public void DEBUG_ForceReward()
-    {
-        RewardScreen.Instance?.Show(_currentLevel);
-    }    
+    } 
 }

@@ -31,6 +31,8 @@ public class RewardScreen : MonoBehaviour
     public TextMeshProUGUI hungerThirstDescription;
     public Sprite hungerThirstSprite;
 
+    private int _pendingLevel = 0;
+
     void Awake()
     {
         if (Instance != null)
@@ -99,6 +101,8 @@ public class RewardScreen : MonoBehaviour
 
     public void Show(int level)
     {
+        _pendingLevel = level;
+
         if (panel != null)
         {
             panel.SetActive(true);
@@ -110,6 +114,30 @@ public class RewardScreen : MonoBehaviour
         if (titleText != null)
         {
             titleText.text = "Nível " + level + " atingido!\nEscolhe a tua recompensa:";
+        }
+
+        Time.timeScale = 0f;
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+    }
+
+    public void HideTemporarily()
+    {
+        if (panel != null)
+        {
+            panel.SetActive(false);
+        }
+    }
+
+    public void ShowWithoutPause()
+    {
+        if (panel != null)
+        {
+            panel.SetActive(true);
+        }
+        if (hud != null)
+        {
+            hud.SetActive(false);
         }
 
         Time.timeScale = 0f;

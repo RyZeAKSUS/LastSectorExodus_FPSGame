@@ -9,6 +9,8 @@ public class PauseMenu : MonoBehaviour
     public TextMeshProUGUI currentScoreText;
     public static bool gameIsPaused = false;
 
+    private bool _rewardWasShowing = false;
+
     void Start()
     {
         pausePanel.SetActive(false);
@@ -41,10 +43,26 @@ public class PauseMenu : MonoBehaviour
         gameIsPaused = false;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
+        if (_rewardWasShowing && RewardScreen.Instance != null)
+        {
+            _rewardWasShowing = false;
+            RewardScreen.Instance.ShowWithoutPause();
+        }
     }
 
     void Pause()
     {
+        if (RewardScreen.Instance != null && RewardScreen.Instance.IsShowing())
+        {
+            _rewardWasShowing = true;
+            RewardScreen.Instance.HideTemporarily();
+        }
+        else
+        {
+            _rewardWasShowing = false;
+        }
+
         pausePanel.SetActive(true);
         hud.SetActive(false);
 
