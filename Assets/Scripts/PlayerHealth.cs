@@ -23,6 +23,9 @@ public class PlayerHealth : MonoBehaviour
 
     public void TakeDamage(float amount)
     {
+        Knife knife = FindFirstObjectByType<Knife>();
+        if (knife != null && knife.IsInvincible()) return;
+
         _currentHealth -= amount;
         _currentHealth = Mathf.Clamp(_currentHealth, 0f, maxHealth);
         UpdateUI();

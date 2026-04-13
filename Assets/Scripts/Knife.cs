@@ -1,24 +1,28 @@
 using UnityEngine;
+using System.Collections;
 
 public class Knife : MonoBehaviour
 {
     [Header("Configuração")]
     public float damage = 40f;
     public float range = 4f;
-    public float attackRate = 0.25f;
-    public float dashForce = 4f;
-    public float dashDuration = 0.1f;
+    public float attackCooldown = 2.5f;
+    public float dashForce = 12f;
+    public float dashDuration = 0.2f;
+    public float invincibilityDuration = 0.45f;
 
     [Header("Referências")]
     public Camera playerCamera;
 
     private float _nextAttackTime;
     private CharacterController _cc;
-    private bool _isDashing = false;
+    private PlayerHealth _playerHealth;
+    private bool _isInvincible = false;
 
     void Start()
     {
         _cc = GetComponentInParent<CharacterController>();
+        _playerHealth = GetComponentInParent<PlayerHealth>();
     }
 
     void Update()
@@ -36,14 +40,14 @@ public class Knife : MonoBehaviour
 
         if (Input.GetButtonDown("Fire1") && Time.time >= _nextAttackTime)
         {
-            _nextAttackTime = Time.time + attackRate;
-            StartCoroutine(AttackWithDash());
+            _nextAttackTime = Time.time + attackCooldown;
+            StartCoroutine(DashAttack());
         }
     }
 
-    System.Collections.IEnumerator AttackWithDash()
+    IEnumerator DashAttack()
     {
-        _isDashing = true;
+        _isInvincible = true;
 
         float elapsed = 0f;
         Vector3 dashDirection = playerCamera.transform.forward;
@@ -60,16 +64,23 @@ public class Knife : MonoBehaviour
             yield return null;
         }
 
-        _isDashing = false;
+        Attack(dashDirection);
 
-        Attack();
+        float remainingInvincibility = invincibilityDuration - dashDuration;
+        if (remainingInvincibility > 0f)
+        {
+            yield return new WaitForSeconds(remainingInvincibility);
+        }
+
+        _isInvincible = false;
     }
 
-    void Attack()
+    void Attack(Vector3 dashDirection)
     {
         Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
+        RaycastHit[] hits = Physics.RaycastAll(ray, range);
 
-        if (Physics.Raycast(ray, out RaycastHit hit, range))
+        foreach (RaycastHit hit in hits)
         {
             EnemyHealth enemy = hit.collider.GetComponent<EnemyHealth>();
             if (enemy != null)
@@ -78,4 +89,6 @@ public class Knife : MonoBehaviour
             }
         }
     }
+
+    public bool IsInvincible() => _isInvincible;
 }
