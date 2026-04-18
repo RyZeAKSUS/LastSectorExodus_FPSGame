@@ -159,3 +159,7 @@ MonoBehaviour:
   lifetime: 3
   impactEffect: {fileID: 4201763842987090765, guid: 504462b125c02f947820f06c32ff9415, type: 3}
   bloodEffect: {fileID: 4201763842987090765, guid: fb669073850950544bd7a7554b1dad2b, type: 3}
+  fleshImpactSounds:
+  - {fileID: 8300000, guid: 8d78004582b21934db3af15891d3112d, type: 3}
+  - {fileID: 8300000, guid: 9827b8502de89a44fa1f99578f19ad9c, type: 3}
+  surfaceImpactSound: {fileID: 8300000, guid: b7ed30d7e0911a84396dbd077d975dc5, type: 3}

@@ -23,7 +23,7 @@ public class PlayerHealth : MonoBehaviour
 
     public void TakeDamage(float amount)
     {
-        Knife knife = FindFirstObjectByType<Knife>();
+        Knife knife = GetComponentInChildren<Knife>(true);
         if (knife != null && knife.IsInvincible()) return;
 
         _currentHealth -= amount;

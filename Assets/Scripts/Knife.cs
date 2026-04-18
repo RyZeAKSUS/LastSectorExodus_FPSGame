@@ -14,15 +14,25 @@ public class Knife : MonoBehaviour
     [Header("Referências")]
     public Camera playerCamera;
 
+    [Header("Sons")]
+    public AudioSource audioSource;
+    public AudioClip swishSound;
+
+    [Header("Trail")]
+    public TrailRenderer trailRenderer;
+
     private float _nextAttackTime;
     private CharacterController _cc;
-    private PlayerHealth _playerHealth;
     private bool _isInvincible = false;
 
     void Start()
     {
         _cc = GetComponentInParent<CharacterController>();
-        _playerHealth = GetComponentInParent<PlayerHealth>();
+
+        if (trailRenderer != null)
+        {
+            trailRenderer.emitting = false;
+        }
     }
 
     void Update()
@@ -49,6 +59,16 @@ public class Knife : MonoBehaviour
     {
         _isInvincible = true;
 
+        if (audioSource != null && swishSound != null)
+        {
+            audioSource.PlayOneShot(swishSound);
+        }
+
+        if (trailRenderer != null)
+        {
+            trailRenderer.emitting = true;
+        }
+
         float elapsed = 0f;
         Vector3 dashDirection = playerCamera.transform.forward;
         dashDirection.y = 0f;
@@ -64,7 +84,12 @@ public class Knife : MonoBehaviour
             yield return null;
         }
 
-        Attack(dashDirection);
+        Attack();
+
+        if (trailRenderer != null)
+        {
+            trailRenderer.emitting = false;
+        }
 
         float remainingInvincibility = invincibilityDuration - dashDuration;
         if (remainingInvincibility > 0f)
@@ -75,7 +100,7 @@ public class Knife : MonoBehaviour
         _isInvincible = false;
     }
 
-    void Attack(Vector3 dashDirection)
+    void Attack()
     {
         Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
         RaycastHit[] hits = Physics.RaycastAll(ray, range);

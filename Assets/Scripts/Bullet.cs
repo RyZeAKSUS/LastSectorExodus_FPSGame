@@ -8,6 +8,10 @@ public class Bullet : MonoBehaviour
     public GameObject impactEffect;
     public GameObject bloodEffect;
 
+    [Header("Sons de Impacto")]
+    public AudioClip[] fleshImpactSounds;
+    public AudioClip surfaceImpactSound;
+
     private Rigidbody _rb;
     private bool _hasHit = false;
 
@@ -30,12 +34,20 @@ public class Bullet : MonoBehaviour
         if (enemy != null)
         {
             enemy.TakeDamage(damage);
+
             if (bloodEffect != null)
             {
                 ContactPoint contact = collision.contacts[0];
-                GameObject effect = Instantiate(bloodEffect, contact.point, Quaternion.LookRotation(contact.normal));
+                GameObject effect = Instantiate(
+                    bloodEffect,
+                    contact.point,
+                    Quaternion.LookRotation(contact.normal)
+                );
                 Destroy(effect, 2f);
             }
+
+            PlayFleshSound(collision.contacts[0].point);
+
             Destroy(gameObject);
             return;
         }
@@ -43,18 +55,25 @@ public class Bullet : MonoBehaviour
         if (impactEffect != null)
         {
             ContactPoint contact = collision.contacts[0];
-            GameObject effect = Instantiate(impactEffect, contact.point, Quaternion.LookRotation(contact.normal));
+            GameObject effect = Instantiate(
+                impactEffect,
+                contact.point,
+                Quaternion.LookRotation(contact.normal)
+            );
             Destroy(effect, 2f);
         }
+
+        PlaySurfaceSound(collision.contacts[0].point);
 
         Destroy(gameObject);
     }
 
-     void FixedUpdate()
+    void FixedUpdate()
     {
         if (_hasHit) return;
 
-        if (Physics.Raycast(transform.position, transform.forward, out RaycastHit hit, speed * Time.fixedDeltaTime * 2f))
+        if (Physics.Raycast(transform.position, transform.forward,
+            out RaycastHit hit, speed * Time.fixedDeltaTime * 2f))
         {
             if (_hasHit) return;
             _hasHit = true;
@@ -63,22 +82,53 @@ public class Bullet : MonoBehaviour
             if (enemy != null)
             {
                 enemy.TakeDamage(damage);
+
                 if (bloodEffect != null)
                 {
-                    GameObject effect = Instantiate(bloodEffect, hit.point, Quaternion.LookRotation(hit.normal));
+                    GameObject effect = Instantiate(
+                        bloodEffect,
+                        hit.point,
+                        Quaternion.LookRotation(hit.normal)
+                    );
                     Destroy(effect, 2f);
                 }
+
+                PlayFleshSound(hit.point);
                 Destroy(gameObject);
                 return;
             }
 
             if (impactEffect != null)
             {
-                GameObject effect = Instantiate(impactEffect, hit.point, Quaternion.LookRotation(hit.normal));
+                GameObject effect = Instantiate(
+                    impactEffect,
+                    hit.point,
+                    Quaternion.LookRotation(hit.normal)
+                );
                 Destroy(effect, 2f);
             }
 
+            PlaySurfaceSound(hit.point);
             Destroy(gameObject);
+        }
+    }
+
+    void PlayFleshSound(Vector3 position)
+    {
+        if (fleshImpactSounds == null || fleshImpactSounds.Length == 0) return;
+
+        AudioClip clip = fleshImpactSounds[Random.Range(0, fleshImpactSounds.Length)];
+        if (clip != null)
+        {
+            AudioSource.PlayClipAtPoint(clip, position);
+        }
+    }
+
+    void PlaySurfaceSound(Vector3 position)
+    {
+        if (surfaceImpactSound != null)
+        {
+            AudioSource.PlayClipAtPoint(surfaceImpactSound, position);
         }
     }
 }
