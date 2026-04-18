@@ -11,6 +11,11 @@ public class Knife : MonoBehaviour
     public float dashDuration = 0.2f;
     public float invincibilityDuration = 0.45f;
 
+    [Header("Animação de Corte")]
+    public float slashRotationAmount = 60f;
+    public float slashSpeed = 20f;
+    public float slashReturnSpeed = 10f;
+
     [Header("Referências")]
     public Camera playerCamera;
 
@@ -69,6 +74,10 @@ public class Knife : MonoBehaviour
             trailRenderer.emitting = true;
         }
 
+        Quaternion originalRotation = transform.localRotation;
+
+        Quaternion slashRotation = originalRotation * Quaternion.Euler(0f, 0f, slashRotationAmount);
+
         float elapsed = 0f;
         Vector3 dashDirection = playerCamera.transform.forward;
         dashDirection.y = 0f;
@@ -80,6 +89,13 @@ public class Knife : MonoBehaviour
             {
                 _cc.Move(dashDirection * dashForce * Time.deltaTime);
             }
+
+            transform.localRotation = Quaternion.Lerp(
+                transform.localRotation,
+                slashRotation,
+                Time.deltaTime * slashSpeed
+            );
+
             elapsed += Time.deltaTime;
             yield return null;
         }
@@ -90,6 +106,21 @@ public class Knife : MonoBehaviour
         {
             trailRenderer.emitting = false;
         }
+
+        float returnElapsed = 0f;
+        float returnDuration = 0.15f;
+        while (returnElapsed < returnDuration)
+        {
+            transform.localRotation = Quaternion.Lerp(
+                transform.localRotation,
+                originalRotation,
+                Time.deltaTime * slashReturnSpeed
+            );
+            returnElapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        transform.localRotation = originalRotation;
 
         float remainingInvincibility = invincibilityDuration - dashDuration;
         if (remainingInvincibility > 0f)
