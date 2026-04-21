@@ -15,6 +15,19 @@ public class PlayerMovement : MonoBehaviour
     [Header("Referências")]
     public Transform cameraHolder;
 
+    [Header("Sons")]
+    public AudioSource audioSource;
+    public AudioSource runAudioSource;
+    public AudioClip[] walkSounds;
+    public AudioClip runSound;
+    public AudioClip jumpSound;
+    public float walkStepInterval = 0.5f;
+    public float runStepInterval = 0.3f;
+
+    [Header("Volume")]
+    public float walkVolume = 0.4f;
+    public float runVolume = 0.7f;
+
     private CharacterController _cc;
     private Vector3 _velocity;
     private bool _isGrounded;
@@ -22,6 +35,8 @@ public class PlayerMovement : MonoBehaviour
     private float _highestY;
     private bool _isFalling;
     private bool _inWater = false;
+    private float _stepTimer = 0f;
+    private bool _wasRunning = false;
 
     void Start()
     {
@@ -29,6 +44,14 @@ public class PlayerMovement : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
         _highestY = transform.position.y;
+
+        if (runAudioSource != null)
+        {
+            runAudioSource.clip = runSound;
+            runAudioSource.loop = true;
+            runAudioSource.volume = runVolume;
+            runAudioSource.Stop();
+        }
     }
 
     void Update()
@@ -96,15 +119,18 @@ public class PlayerMovement : MonoBehaviour
         float x = Input.GetAxisRaw("Horizontal");
         float z = Input.GetAxisRaw("Vertical");
         bool wantsToRun = Input.GetKey(KeyCode.LeftShift);
+        bool isMoving = (x != 0f || z != 0f) && _isGrounded && !_inWater;
 
         float baseSpeed;
 
         if (_inWater)
         {
             baseSpeed = 2f;
+            _stepTimer = 0f;
+            StopRunSound();
             StaminaSystem.Instance?.RegenStamina(Time.deltaTime);
         }
-        else if (wantsToRun && (x != 0f || z != 0f))
+        else if (wantsToRun && isMoving)
         {
             bool canRun = StaminaSystem.Instance != null
                 ? StaminaSystem.Instance.ConsumeStamina(Time.deltaTime)
@@ -112,7 +138,7 @@ public class PlayerMovement : MonoBehaviour
 
             baseSpeed = canRun ? runSpeed : walkSpeed;
 
-            if (!wantsToRun || !canRun)
+            if (!canRun)
             {
                 StaminaSystem.Instance?.RegenStamina(Time.deltaTime);
             }
@@ -131,6 +157,72 @@ public class PlayerMovement : MonoBehaviour
 
         Vector3 move = transform.right * x + transform.forward * z;
         _cc.Move(move * speed * Time.deltaTime);
+
+        bool isRunning = wantsToRun && baseSpeed >= runSpeed && isMoving;
+
+        if (isMoving)
+        {
+            if (isRunning)
+            {
+                if (!_wasRunning)
+                {
+                    StartRunSound();
+                }
+                _stepTimer = 0f;
+            }
+            else
+            {
+                if (_wasRunning)
+                {
+                    StopRunSound();
+                }
+
+                _stepTimer += Time.deltaTime;
+                if (_stepTimer >= walkStepInterval)
+                {
+                    _stepTimer = 0f;
+                    PlayWalkSound();
+                }
+            }
+        }
+        else
+        {
+            _stepTimer = 0f;
+            if (_wasRunning)
+            {
+                StopRunSound();
+            }
+        }
+
+        _wasRunning = isRunning;
+    }
+
+    void StartRunSound()
+    {
+        if (runAudioSource != null && runSound != null && !runAudioSource.isPlaying)
+        {
+            runAudioSource.Play();
+        }
+    }
+
+    void StopRunSound()
+    {
+        if (runAudioSource != null && runAudioSource.isPlaying)
+        {
+            runAudioSource.Stop();
+        }
+    }
+
+    void PlayWalkSound()
+    {
+        if (audioSource != null && walkSounds != null && walkSounds.Length > 0)
+        {
+            AudioClip step = walkSounds[Random.Range(0, walkSounds.Length)];
+            if (step != null)
+            {
+                audioSource.PlayOneShot(step, walkVolume);
+            }
+        }
     }
 
     void HandleJump()
@@ -138,6 +230,12 @@ public class PlayerMovement : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space) && _isGrounded && !_inWater)
         {
             _velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
+            StopRunSound();
+
+            if (audioSource != null && jumpSound != null)
+            {
+                audioSource.PlayOneShot(jumpSound);
+            }
         }
     }
 
@@ -167,5 +265,6 @@ public class PlayerMovement : MonoBehaviour
         _inWater = inWater;
         _velocity.y = 0f;
         _isGrounded = false;
+        StopRunSound();
     }
 }

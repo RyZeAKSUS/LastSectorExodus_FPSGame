@@ -29,6 +29,8 @@ public class Knife : MonoBehaviour
     private float _nextAttackTime;
     private CharacterController _cc;
     private bool _isInvincible = false;
+    private bool _isAttacking = false;
+    private Quaternion _originalRotation;
 
     void Start()
     {
@@ -38,6 +40,20 @@ public class Knife : MonoBehaviour
         {
             trailRenderer.emitting = false;
         }
+    }
+
+    void OnEnable()
+    {
+        _isAttacking = false;
+        _isInvincible = false;
+        StopAllCoroutines();
+
+        if (trailRenderer != null)
+        {
+            trailRenderer.emitting = false;
+        }
+
+        transform.localRotation = Quaternion.identity;
     }
 
     void Update()
@@ -53,7 +69,7 @@ public class Knife : MonoBehaviour
         if (InventorySystem.Instance != null && InventorySystem.Instance.GetIsOpen()) return;
         if (RewardScreen.Instance != null && RewardScreen.Instance.IsShowing()) return;
 
-        if (Input.GetButtonDown("Fire1") && Time.time >= _nextAttackTime)
+        if (Input.GetButtonDown("Fire1") && Time.time >= _nextAttackTime && !_isAttacking)
         {
             _nextAttackTime = Time.time + attackCooldown;
             StartCoroutine(DashAttack());
@@ -62,7 +78,13 @@ public class Knife : MonoBehaviour
 
     IEnumerator DashAttack()
     {
+        _isAttacking = true;
         _isInvincible = true;
+
+        if (InventorySystem.Instance != null)
+        {
+            InventorySystem.Instance.SetSwapLocked(true);
+        }
 
         if (audioSource != null && swishSound != null)
         {
@@ -74,9 +96,8 @@ public class Knife : MonoBehaviour
             trailRenderer.emitting = true;
         }
 
-        Quaternion originalRotation = transform.localRotation;
-
-        Quaternion slashRotation = originalRotation * Quaternion.Euler(0f, 0f, slashRotationAmount);
+        _originalRotation = transform.localRotation;
+        Quaternion slashRotation = _originalRotation * Quaternion.Euler(0f, 0f, slashRotationAmount);
 
         float elapsed = 0f;
         Vector3 dashDirection = playerCamera.transform.forward;
@@ -113,14 +134,14 @@ public class Knife : MonoBehaviour
         {
             transform.localRotation = Quaternion.Lerp(
                 transform.localRotation,
-                originalRotation,
+                _originalRotation,
                 Time.deltaTime * slashReturnSpeed
             );
             returnElapsed += Time.deltaTime;
             yield return null;
         }
 
-        transform.localRotation = originalRotation;
+        transform.localRotation = _originalRotation;
 
         float remainingInvincibility = invincibilityDuration - dashDuration;
         if (remainingInvincibility > 0f)
@@ -129,6 +150,12 @@ public class Knife : MonoBehaviour
         }
 
         _isInvincible = false;
+        _isAttacking = false;
+
+        if (InventorySystem.Instance != null)
+        {
+            InventorySystem.Instance.SetSwapLocked(false);
+        }
     }
 
     void Attack()
@@ -147,4 +174,5 @@ public class Knife : MonoBehaviour
     }
 
     public bool IsInvincible() => _isInvincible;
+    public bool IsAttacking() => _isAttacking;
 }

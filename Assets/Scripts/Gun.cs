@@ -28,7 +28,7 @@ public class Gun : MonoBehaviour
     public TextMeshProUGUI fireModeText;
 
     [Header("Muzzle Flash")]
-    public ParticleSystem muzzleFlash;
+    public GameObject[] muzzleFlashes;
 
     [Header("Sons")]
     public AudioSource audioSource;
@@ -57,11 +57,6 @@ public class Gun : MonoBehaviour
     {
         _bulletsLeft = magazineSize;
 
-        _originalLocalPosition = transform.localPosition;
-        _originalLocalRotation = transform.localRotation;
-        _targetLocalPosition = _originalLocalPosition;
-        _targetLocalRotation = _originalLocalRotation;
-
         if (reloadBarObject != null)
         {
             reloadBarObject.SetActive(false);
@@ -73,6 +68,14 @@ public class Gun : MonoBehaviour
 
         UpdateAmmoUI();
         UpdateFireModeUI();
+    }
+
+    void OnEnable()
+    {
+        _originalLocalPosition = transform.localPosition;
+        _originalLocalRotation = transform.localRotation;
+        _targetLocalPosition = _originalLocalPosition;
+        _targetLocalRotation = _originalLocalRotation;
     }
 
     void Update()
@@ -124,14 +127,32 @@ public class Gun : MonoBehaviour
         _bulletsLeft--;
         UpdateAmmoUI();
 
-        if (audioSource != null && fireSound != null)
+        if (fireSound != null)
         {
-            audioSource.PlayOneShot(fireSound);
+            AudioSource persistentSource = GetComponentInParent<GunSwitcher>()
+                ?.GetComponent<AudioSource>();
+            if (persistentSource != null)
+            {
+                persistentSource.PlayOneShot(fireSound);
+            }
+            else if (audioSource != null)
+            {
+                audioSource.PlayOneShot(fireSound);
+            }
         }
 
-        if (muzzleFlash != null)
+        if (muzzleFlashes != null && muzzleFlashes.Length > 0)
         {
-            muzzleFlash.Play();
+            int randomIndex = Random.Range(0, muzzleFlashes.Length);
+            if (muzzleFlashes[randomIndex] != null)
+            {
+                GameObject flash = Instantiate(
+                    muzzleFlashes[randomIndex],
+                    muzzlePoint.position,
+                    muzzlePoint.rotation
+                );
+                flash.transform.SetParent(muzzlePoint);
+            }
         }
 
         ApplyRecoil();
@@ -142,7 +163,11 @@ public class Gun : MonoBehaviour
             : ray.GetPoint(range);
 
         Vector3 direction = (targetPoint - muzzlePoint.position).normalized;
-        GameObject bullet = Instantiate(bulletPrefab, muzzlePoint.position, Quaternion.LookRotation(direction));
+        GameObject bullet = Instantiate(
+            bulletPrefab,
+            muzzlePoint.position,
+            Quaternion.LookRotation(direction)
+        );
         bullet.GetComponent<Bullet>().damage = damage;
 
         if (_bulletsLeft <= 0 && reserveAmmo > 0)
@@ -239,10 +264,13 @@ public class Gun : MonoBehaviour
             UpdateAmmoUI();
         }
 
-        transform.localPosition = _originalLocalPosition;
-        transform.localRotation = _originalLocalRotation;
-        _targetLocalPosition = _originalLocalPosition;
-        _targetLocalRotation = _originalLocalRotation;
+        if (_originalLocalPosition != Vector3.zero)
+        {
+            transform.localPosition = _originalLocalPosition;
+            transform.localRotation = _originalLocalRotation;
+            _targetLocalPosition = _originalLocalPosition;
+            _targetLocalRotation = _originalLocalRotation;
+        }
     }
 
     public void AddAmmo(int amount)

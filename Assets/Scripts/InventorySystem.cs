@@ -26,6 +26,7 @@ public class InventorySystem : MonoBehaviour
     private int _activeSlot = 0;
     private bool _isOpen = false;
     private GameObject _handCosmetic;
+    private bool _swapLocked = false;
 
     void Awake()
     {
@@ -95,6 +96,7 @@ public class InventorySystem : MonoBehaviour
 
     void HandleScroll()
     {
+        if (_swapLocked) return;
         if (RewardScreen.Instance != null && RewardScreen.Instance.IsShowing()) return;
 
         float scroll = Input.GetAxis("Mouse ScrollWheel");
@@ -129,6 +131,8 @@ public class InventorySystem : MonoBehaviour
 
     public void TryEquipSlot(int slot)
     {
+        if (_swapLocked) return;
+
         if (slot < 5)
         {
             if (!_weaponOwned[slot]) return;
@@ -316,6 +320,11 @@ public class InventorySystem : MonoBehaviour
     {
         if (index < 0 || index >= CosmeticCount) return 0;
         return _cosmeticCounts[index];
+    }
+
+    public void SetSwapLocked(bool locked)
+    {
+        _swapLocked = locked;
     }
 
     public bool GetIsOpen() => _isOpen;

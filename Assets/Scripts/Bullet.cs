@@ -11,6 +11,7 @@ public class Bullet : MonoBehaviour
     [Header("Sons de Impacto")]
     public AudioClip[] fleshImpactSounds;
     public AudioClip surfaceImpactSound;
+    public AudioClip hitMarkerSound;
 
     private Rigidbody _rb;
     private bool _hasHit = false;
@@ -47,7 +48,6 @@ public class Bullet : MonoBehaviour
             }
 
             PlayFleshSound(collision.contacts[0].point);
-
             Destroy(gameObject);
             return;
         }
@@ -64,7 +64,6 @@ public class Bullet : MonoBehaviour
         }
 
         PlaySurfaceSound(collision.contacts[0].point);
-
         Destroy(gameObject);
     }
 
@@ -115,12 +114,22 @@ public class Bullet : MonoBehaviour
 
     void PlayFleshSound(Vector3 position)
     {
-        if (fleshImpactSounds == null || fleshImpactSounds.Length == 0) return;
-
-        AudioClip clip = fleshImpactSounds[Random.Range(0, fleshImpactSounds.Length)];
-        if (clip != null)
+        if (fleshImpactSounds != null && fleshImpactSounds.Length > 0)
         {
-            AudioSource.PlayClipAtPoint(clip, position);
+            AudioClip clip = fleshImpactSounds[Random.Range(0, fleshImpactSounds.Length)];
+            if (clip != null)
+            {
+                AudioSource.PlayClipAtPoint(clip, position);
+            }
+        }
+
+        if (hitMarkerSound != null)
+        {
+            Camera cam = Camera.main;
+            if (cam != null)
+            {
+                AudioSource.PlayClipAtPoint(hitMarkerSound, cam.transform.position);
+            }
         }
     }
 

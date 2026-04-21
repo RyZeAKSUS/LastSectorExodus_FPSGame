@@ -6,6 +6,10 @@ public class PlayerHealth : MonoBehaviour
     public float maxHealth = 100f;
     public Slider healthBar;
 
+    [Header("Sons")]
+    public AudioSource audioSource;
+    public AudioClip hitSound;
+
     private float _currentHealth;
     private DamageOverlay _damageOverlay;
 
@@ -33,6 +37,11 @@ public class PlayerHealth : MonoBehaviour
         if (_damageOverlay != null)
         {
             _damageOverlay.Flash();
+        }
+
+        if (audioSource != null && hitSound != null)
+        {
+            audioSource.PlayOneShot(hitSound);
         }
 
         ScoreManager.Instance?.BreakCombo();

@@ -156,3 +156,4 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 8d78004582b21934db3af15891d3112d, type: 3}
   - {fileID: 8300000, guid: 9827b8502de89a44fa1f99578f19ad9c, type: 3}
   surfaceImpactSound: {fileID: 8300000, guid: b7ed30d7e0911a84396dbd077d975dc5, type: 3}
+  hitMarkerSound: {fileID: 8300000, guid: 82ab6a17638769a43b5c82809e78c8a9, type: 3}

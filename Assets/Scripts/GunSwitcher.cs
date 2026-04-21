@@ -5,6 +5,13 @@ public class GunSwitcher : MonoBehaviour
     public GameObject[] weapons;
     public int _currentWeapon = 0;
 
+    [Header("Som de equipar")]
+    public AudioSource audioSource;
+    public AudioClip equipSound;
+    public float equipSoundCooldown = 0.2f;
+
+    private float _lastEquipSoundTime = -999f;
+
     void Start()
     {
         HideAllWeapons();
@@ -18,8 +25,14 @@ public class GunSwitcher : MonoBehaviour
         }
 
         _currentWeapon = index;
-
         ClearAllGunUI();
+
+        if (audioSource != null && equipSound != null
+            && Time.time - _lastEquipSoundTime >= equipSoundCooldown)
+        {
+            audioSource.PlayOneShot(equipSound);
+            _lastEquipSoundTime = Time.time;
+        }
 
         Gun gun = weapons[_currentWeapon].GetComponent<Gun>();
         if (gun != null)

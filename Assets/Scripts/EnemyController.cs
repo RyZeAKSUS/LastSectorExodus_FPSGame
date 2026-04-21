@@ -12,6 +12,22 @@ public class EnemyController : MonoBehaviour
     public float rageHealthThreshold = 0.5f;
     private bool _rageActivated = false;
 
+    [Header("Sons")]
+    public AudioSource audioSource;
+    public AudioClip hurtSound;
+    public AudioClip deathSound;
+    public AudioClip roarSound;
+    public AudioClip[] footstepSounds;
+
+    [Header("Configuração de Sons")]
+    public float roarInterval = 8f;
+    public float roarIntervalVariance = 4f;
+    public float footstepInterval = 0.5f;
+    public float footstepVolume = 0.3f;
+
+    private static float _globalRoarCooldown = 0f;
+    private static float _globalRoarCooldownDuration = 2f;
+
     [HideInInspector] public EnemySpawner assignedSpawner;
 
     private NavMeshAgent _agent;
@@ -32,6 +48,8 @@ public class EnemyController : MonoBehaviour
     private bool _hasWalkIndex = false;
     private bool _hasAttackIndex = false;
     private bool _hasRunIndex = false;
+    private float _nextRoarTime = 0f;
+    private float _footstepTimer = 0f;
 
     void Awake()
     {
@@ -118,11 +136,18 @@ public class EnemyController : MonoBehaviour
         {
             _agent.isStopped = false;
         }
+
+        _nextRoarTime = Time.time + Random.Range(roarInterval, roarInterval + roarIntervalVariance);
     }
 
     void Update()
     {
         if (_isDead || player == null) return;
+
+        if (_globalRoarCooldown > 0f)
+        {
+            _globalRoarCooldown -= Time.deltaTime;
+        }
 
         if (!_isActive)
         {
@@ -192,6 +217,8 @@ public class EnemyController : MonoBehaviour
                     }
                 }
             }
+
+            HandleFootsteps();
         }
 
         if (!_isMoving)
@@ -205,6 +232,41 @@ public class EnemyController : MonoBehaviour
                     _animator.SetInteger("idleIndex", Random.Range(0, _maxIdleIndex + 1));
                 }
             }
+        }
+
+        HandleRoar();
+    }
+
+    void HandleFootsteps()
+    {
+        if (footstepSounds == null || footstepSounds.Length == 0) return;
+        if (audioSource == null) return;
+
+        _footstepTimer += Time.deltaTime;
+        if (_footstepTimer >= footstepInterval)
+        {
+            _footstepTimer = 0f;
+            AudioClip step = footstepSounds[Random.Range(0, footstepSounds.Length)];
+            if (step != null)
+            {
+                audioSource.PlayOneShot(step, footstepVolume);
+            }
+        }
+    }
+
+    void HandleRoar()
+    {
+        if (roarSound == null || audioSource == null) return;
+
+        if (Time.time >= _nextRoarTime)
+        {
+            if (_globalRoarCooldown <= 0f)
+            {
+                audioSource.PlayOneShot(roarSound);
+                _globalRoarCooldown = _globalRoarCooldownDuration;
+            }
+
+            _nextRoarTime = Time.time + roarInterval + Random.Range(0f, roarIntervalVariance);
         }
     }
 
@@ -237,6 +299,11 @@ public class EnemyController : MonoBehaviour
                 _animator.SetInteger("hitIndex", Random.Range(0, maxHitIndex + 1));
             }
             _animator?.SetTrigger("takehit");
+
+            if (audioSource != null && hurtSound != null)
+            {
+                audioSource.PlayOneShot(hurtSound);
+            }
         }
     }
 
@@ -253,6 +320,11 @@ public class EnemyController : MonoBehaviour
             _animator.SetInteger("deathIndex", Random.Range(0, maxDeathIndex + 1));
         }
         _animator?.SetTrigger("death");
+
+        if (audioSource != null && deathSound != null)
+        {
+            audioSource.PlayOneShot(deathSound);
+        }
 
         GetComponent<EnemyHealth>().AwardScore();
 
