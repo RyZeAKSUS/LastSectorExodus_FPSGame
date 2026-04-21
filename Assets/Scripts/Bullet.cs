@@ -9,6 +9,9 @@ public class Bullet : MonoBehaviour
     public GameObject bloodEffect;
     public GameObject bulletHolePrefab;
 
+    [Header("Buraco de Bala")]
+    public float bulletHoleSize = 0.05f;
+
     [Header("Sons de Impacto")]
     public AudioClip[] fleshImpactSounds;
     public AudioClip surfaceImpactSound;
@@ -70,9 +73,8 @@ public class Bullet : MonoBehaviour
             Vector3 holePos = surfaceContact.point + surfaceContact.normal * 0.001f;
             Quaternion holeRot = Quaternion.LookRotation(-surfaceContact.normal);
             GameObject hole = Instantiate(bulletHolePrefab, holePos, holeRot);
-
+            hole.transform.localScale = Vector3.one * bulletHoleSize;
             hole.transform.SetParent(collision.transform);
-
             Destroy(hole, 30f);
         }
 
@@ -125,6 +127,7 @@ public class Bullet : MonoBehaviour
                 Vector3 holePos = hit.point + hit.normal * 0.001f;
                 Quaternion holeRot = Quaternion.LookRotation(-hit.normal);
                 GameObject hole = Instantiate(bulletHolePrefab, holePos, holeRot);
+                hole.transform.localScale = Vector3.one * bulletHoleSize;
                 hole.transform.SetParent(hit.transform);
                 Destroy(hole, 30f);
             }

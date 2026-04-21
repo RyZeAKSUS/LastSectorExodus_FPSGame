@@ -152,6 +152,7 @@ public class Gun : MonoBehaviour
                     muzzlePoint.rotation
                 );
                 flash.transform.SetParent(muzzlePoint);
+                Destroy(flash, 0.05f);
             }
         }
 
