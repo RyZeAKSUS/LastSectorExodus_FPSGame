@@ -165,10 +165,9 @@ public class Knife : MonoBehaviour
 
         foreach (RaycastHit hit in hits)
         {
-            EnemyHealth enemy = hit.collider.GetComponent<EnemyHealth>();
-            if (enemy != null)
+            if (hit.collider.TryGetComponent(out EnemyHealth enemy))
             {
-                enemy.TakeDamage(damage);
+                enemy.TakeDamage(damage, false);
             }
         }
     }

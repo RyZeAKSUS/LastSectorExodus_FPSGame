@@ -30,6 +30,10 @@ public class Gun : MonoBehaviour
     [Header("Muzzle Flash")]
     public GameObject[] muzzleFlashes;
 
+    [Header("Buraco de Bala")]
+    public GameObject bulletHolePrefab;
+    public float bulletHoleSize = 0.15f;
+
     [Header("Sons")]
     public AudioSource audioSource;
     public AudioClip fireSound;
@@ -162,6 +166,19 @@ public class Gun : MonoBehaviour
         Vector3 targetPoint = Physics.Raycast(ray, out RaycastHit hit, range)
             ? hit.point
             : ray.GetPoint(range);
+
+        if (bulletHolePrefab != null && Physics.Raycast(ray, out RaycastHit holeHit, range))
+        {
+            if (holeHit.collider.GetComponent<EnemyHealth>() == null &&
+                holeHit.collider.GetComponent<HeadshotZone>() == null)
+            {
+                Vector3 holePos = holeHit.point + holeHit.normal * 0.005f;
+                Quaternion holeRot = Quaternion.LookRotation(-holeHit.normal);
+                GameObject hole = Instantiate(bulletHolePrefab, holePos, holeRot);
+                hole.transform.localScale = Vector3.one * bulletHoleSize;
+                Destroy(hole, 30f);
+            }
+        }
 
         Vector3 direction = (targetPoint - muzzlePoint.position).normalized;
         GameObject bullet = Instantiate(

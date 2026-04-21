@@ -14,10 +14,16 @@ public class EnemyHealth : MonoBehaviour
         _controller = GetComponent<EnemyController>();
     }
 
-    public void TakeDamage(float amount)
+    public void TakeDamage(float amount, bool isHeadshot)
     {
         _currentHealth -= amount;
         _controller.TakeHit();
+
+        if (isHeadshot)
+        {
+            HeadshotManager.Instance?.RegisterHeadshot();
+        }
+
         if (_currentHealth <= 0f)
         {
             _controller.Die();

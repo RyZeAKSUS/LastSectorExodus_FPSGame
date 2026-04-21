@@ -5,6 +5,9 @@ TagManager:
   serializedVersion: 3
   tags:
   - Bullet
+  - SecondCamera
+  - BulletSpawn
+  - Weapon
   layers:
   - Default
   - TransparentFX
@@ -14,7 +17,7 @@ TagManager:
   - UI
   - Enemy
   - Bullet
-  - 
+  - Headshot
   - 
   - 
   - 

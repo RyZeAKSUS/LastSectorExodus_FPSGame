@@ -7,15 +7,15 @@ public class Bullet : MonoBehaviour
     public float lifetime = 3f;
     public GameObject impactEffect;
     public GameObject bloodEffect;
-    public GameObject bulletHolePrefab;
-
-    [Header("Buraco de Bala")]
-    public float bulletHoleSize = 0.05f;
 
     [Header("Sons de Impacto")]
     public AudioClip[] fleshImpactSounds;
     public AudioClip surfaceImpactSound;
     public AudioClip hitMarkerSound;
+
+    [Header("Headshot")]
+    public float headshotMultiplier = 2.5f;
+    public LayerMask headshotLayer;
 
     private Rigidbody _rb;
     private bool _hasHit = false;
@@ -30,6 +30,33 @@ public class Bullet : MonoBehaviour
         Destroy(gameObject, lifetime);
     }
 
+    void OnTriggerEnter(Collider other)
+    {
+        if (_hasHit) return;
+
+        HeadshotZone zone = other.GetComponent<HeadshotZone>();
+        if (zone == null) return;
+        if (zone.enemyHealth == null) return;
+
+        _hasHit = true;
+
+        float headshotDamage = damage * headshotMultiplier;
+        zone.enemyHealth.TakeDamage(headshotDamage, true);
+
+        if (bloodEffect != null)
+        {
+            GameObject effect = Instantiate(
+                bloodEffect,
+                transform.position,
+                Quaternion.identity
+            );
+            Destroy(effect, 2f);
+        }
+
+        PlayFleshSound(transform.position);
+        Destroy(gameObject);
+    }
+
     void OnCollisionEnter(Collision collision)
     {
         if (_hasHit) return;
@@ -38,7 +65,7 @@ public class Bullet : MonoBehaviour
         EnemyHealth enemy = collision.gameObject.GetComponent<EnemyHealth>();
         if (enemy != null)
         {
-            enemy.TakeDamage(damage);
+            enemy.TakeDamage(damage, false);
 
             if (bloodEffect != null)
             {
@@ -68,16 +95,6 @@ public class Bullet : MonoBehaviour
             Destroy(effect, 2f);
         }
 
-        if (bulletHolePrefab != null)
-        {
-            Vector3 holePos = surfaceContact.point + surfaceContact.normal * 0.001f;
-            Quaternion holeRot = Quaternion.LookRotation(-surfaceContact.normal);
-            GameObject hole = Instantiate(bulletHolePrefab, holePos, holeRot);
-            hole.transform.localScale = Vector3.one * bulletHoleSize;
-            hole.transform.SetParent(collision.transform);
-            Destroy(hole, 30f);
-        }
-
         PlaySurfaceSound(surfaceContact.point);
         Destroy(gameObject);
     }
@@ -86,8 +103,39 @@ public class Bullet : MonoBehaviour
     {
         if (_hasHit) return;
 
+        float checkDistance = speed * Time.fixedDeltaTime * 2f;
+
         if (Physics.Raycast(transform.position, transform.forward,
-            out RaycastHit hit, speed * Time.fixedDeltaTime * 2f))
+            out RaycastHit headshotHit, checkDistance, headshotLayer,
+            QueryTriggerInteraction.Collide))
+        {
+            if (_hasHit) return;
+            _hasHit = true;
+
+            HeadshotZone zone = headshotHit.collider.GetComponent<HeadshotZone>();
+            if (zone != null && zone.enemyHealth != null)
+            {
+                float headshotDamage = damage * headshotMultiplier;
+                zone.enemyHealth.TakeDamage(headshotDamage, true);
+
+                if (bloodEffect != null)
+                {
+                    GameObject effect = Instantiate(
+                        bloodEffect,
+                        headshotHit.point,
+                        Quaternion.LookRotation(headshotHit.normal)
+                    );
+                    Destroy(effect, 2f);
+                }
+
+                PlayFleshSound(headshotHit.point);
+                Destroy(gameObject);
+                return;
+            }
+        }
+
+        if (Physics.Raycast(transform.position, transform.forward,
+            out RaycastHit hit, checkDistance))
         {
             if (_hasHit) return;
             _hasHit = true;
@@ -95,7 +143,7 @@ public class Bullet : MonoBehaviour
             EnemyHealth enemy = hit.collider.GetComponent<EnemyHealth>();
             if (enemy != null)
             {
-                enemy.TakeDamage(damage);
+                enemy.TakeDamage(damage, false);
 
                 if (bloodEffect != null)
                 {
@@ -120,16 +168,6 @@ public class Bullet : MonoBehaviour
                     Quaternion.LookRotation(hit.normal)
                 );
                 Destroy(effect, 2f);
-            }
-
-            if (bulletHolePrefab != null)
-            {
-                Vector3 holePos = hit.point + hit.normal * 0.001f;
-                Quaternion holeRot = Quaternion.LookRotation(-hit.normal);
-                GameObject hole = Instantiate(bulletHolePrefab, holePos, holeRot);
-                hole.transform.localScale = Vector3.one * bulletHoleSize;
-                hole.transform.SetParent(hit.transform);
-                Destroy(hole, 30f);
             }
 
             PlaySurfaceSound(hit.point);
