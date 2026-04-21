@@ -7,6 +7,7 @@ public class Bullet : MonoBehaviour
     public float lifetime = 3f;
     public GameObject impactEffect;
     public GameObject bloodEffect;
+    public GameObject bulletHolePrefab;
 
     [Header("Sons de Impacto")]
     public AudioClip[] fleshImpactSounds;
@@ -52,18 +53,30 @@ public class Bullet : MonoBehaviour
             return;
         }
 
+        ContactPoint surfaceContact = collision.contacts[0];
+
         if (impactEffect != null)
         {
-            ContactPoint contact = collision.contacts[0];
             GameObject effect = Instantiate(
                 impactEffect,
-                contact.point,
-                Quaternion.LookRotation(contact.normal)
+                surfaceContact.point,
+                Quaternion.LookRotation(surfaceContact.normal)
             );
             Destroy(effect, 2f);
         }
 
-        PlaySurfaceSound(collision.contacts[0].point);
+        if (bulletHolePrefab != null)
+        {
+            Vector3 holePos = surfaceContact.point + surfaceContact.normal * 0.001f;
+            Quaternion holeRot = Quaternion.LookRotation(-surfaceContact.normal);
+            GameObject hole = Instantiate(bulletHolePrefab, holePos, holeRot);
+
+            hole.transform.SetParent(collision.transform);
+
+            Destroy(hole, 30f);
+        }
+
+        PlaySurfaceSound(surfaceContact.point);
         Destroy(gameObject);
     }
 
@@ -105,6 +118,15 @@ public class Bullet : MonoBehaviour
                     Quaternion.LookRotation(hit.normal)
                 );
                 Destroy(effect, 2f);
+            }
+
+            if (bulletHolePrefab != null)
+            {
+                Vector3 holePos = hit.point + hit.normal * 0.001f;
+                Quaternion holeRot = Quaternion.LookRotation(-hit.normal);
+                GameObject hole = Instantiate(bulletHolePrefab, holePos, holeRot);
+                hole.transform.SetParent(hit.transform);
+                Destroy(hole, 30f);
             }
 
             PlaySurfaceSound(hit.point);

@@ -3,7 +3,7 @@ using UnityEngine;
 public class AmmoBox : MonoBehaviour
 {
     [Header("Configuração")]
-    public int ammoAmount = 30;
+    public float respawnTime = 15f;
 
     [Header("Referências")]
     public GameObject lid;
@@ -67,7 +67,7 @@ public class AmmoBox : MonoBehaviour
         Gun activeGun = gunSwitcher.weapons[activeSlot].GetComponent<Gun>();
         if (activeGun == null) return;
 
-        activeGun.AddAmmo(ammoAmount);
+        activeGun.AddAmmo(activeGun.maxReserveAmmo);
         activeGun.ForceUpdateUI();
 
         _isAvailable = false;

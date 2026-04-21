@@ -152,6 +152,7 @@ MonoBehaviour:
   lifetime: 3
   impactEffect: {fileID: 4201763842987090765, guid: ed7916353fa6dea4e95cdf94f1329d89, type: 3}
   bloodEffect: {fileID: 4201763842987090765, guid: f5855fc6d90868e48a20286ed07d0188, type: 3}
+  bulletHolePrefab: {fileID: 179232, guid: b2ac1383a96f94a50b7ed458be173bbd, type: 3}
   fleshImpactSounds:
   - {fileID: 8300000, guid: 8d78004582b21934db3af15891d3112d, type: 3}
   - {fileID: 8300000, guid: 9827b8502de89a44fa1f99578f19ad9c, type: 3}

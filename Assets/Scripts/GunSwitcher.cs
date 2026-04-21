@@ -11,6 +11,7 @@ public class GunSwitcher : MonoBehaviour
     public float equipSoundCooldown = 0.2f;
 
     private float _lastEquipSoundTime = -999f;
+    private bool _isFirstEquip = true;
 
     void Start()
     {
@@ -27,11 +28,18 @@ public class GunSwitcher : MonoBehaviour
         _currentWeapon = index;
         ClearAllGunUI();
 
-        if (audioSource != null && equipSound != null
-            && Time.time - _lastEquipSoundTime >= equipSoundCooldown)
+        if (_isFirstEquip)
         {
-            audioSource.PlayOneShot(equipSound);
-            _lastEquipSoundTime = Time.time;
+            _isFirstEquip = false;
+        }
+        else
+        {
+            if (audioSource != null && equipSound != null
+                && Time.time - _lastEquipSoundTime >= equipSoundCooldown)
+            {
+                audioSource.PlayOneShot(equipSound);
+                _lastEquipSoundTime = Time.time;
+            }
         }
 
         Gun gun = weapons[_currentWeapon].GetComponent<Gun>();
