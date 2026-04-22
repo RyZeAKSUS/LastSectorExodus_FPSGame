@@ -26,6 +26,9 @@ public class Knife : MonoBehaviour
     [Header("Trail")]
     public TrailRenderer trailRenderer;
 
+    [Header("Wall Check")]
+    public float wallCheckDistance = 0.5f;
+
     private float _nextAttackTime;
     private CharacterController _cc;
     private bool _isInvincible = false;
@@ -68,6 +71,7 @@ public class Knife : MonoBehaviour
         if (VictoryMenu.victoryShowing) return;
         if (InventorySystem.Instance != null && InventorySystem.Instance.GetIsOpen()) return;
         if (RewardScreen.Instance != null && RewardScreen.Instance.IsShowing()) return;
+        if (WeaponWallCheck.IsWeaponLowered) return;
 
         if (Input.GetButtonDown("Fire1") && Time.time >= _nextAttackTime && !_isAttacking)
         {

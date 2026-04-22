@@ -49,6 +49,9 @@ public class Gun : MonoBehaviour
     public UnityEngine.UI.Slider reloadBar;
     public GameObject reloadBarObject;
 
+    [Header("Wall Check")]
+    public float wallCheckDistance = 0.8f;
+
     private int _bulletsLeft;
     private bool _isReloading;
     private float _nextFireTime;
@@ -96,6 +99,7 @@ public class Gun : MonoBehaviour
         if (InventorySystem.Instance != null && InventorySystem.Instance.GetIsOpen()) return;
         if (RewardScreen.Instance != null && RewardScreen.Instance.IsShowing()) return;
         if (_isReloading) return;
+        if (WeaponWallCheck.IsWeaponLowered) return;
 
         if (fireMode == FireMode.Automatic)
         {
