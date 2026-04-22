@@ -25,8 +25,8 @@ public class InventorySystem : MonoBehaviour
     private int[] _cosmeticCounts = new int[CosmeticCount];
     private int _activeSlot = 0;
     private bool _isOpen = false;
-    private GameObject _handCosmetic;
     private bool _swapLocked = false;
+    private GameObject _handCosmetic;
 
     void Awake()
     {
@@ -256,9 +256,13 @@ public class InventorySystem : MonoBehaviour
                 if (def != null && def.worldPrefab != null && handItemHolder != null)
                 {
                     _handCosmetic = Instantiate(def.worldPrefab, handItemHolder);
-                    _handCosmetic.transform.localPosition = new Vector3(0.3f, -0.2f, 0.5f);
-                    _handCosmetic.transform.localRotation = Quaternion.Euler(0f, 180f, 0f);
-                    _handCosmetic.transform.localScale = Vector3.one * 0.3f;
+
+                    if (_handCosmetic != null)
+                    {
+                        _handCosmetic.transform.localPosition = def.handPosition;
+                        _handCosmetic.transform.localRotation = Quaternion.Euler(def.handRotation);
+                        _handCosmetic.transform.localScale = def.handScale;
+                    }
                 }
             }
         }
@@ -271,6 +275,11 @@ public class InventorySystem : MonoBehaviour
             Destroy(_handCosmetic);
             _handCosmetic = null;
         }
+    }
+
+    public void SetSwapLocked(bool locked)
+    {
+        _swapLocked = locked;
     }
 
     public bool CanPickupWeapon(int weaponIndex)
@@ -320,11 +329,6 @@ public class InventorySystem : MonoBehaviour
     {
         if (index < 0 || index >= CosmeticCount) return 0;
         return _cosmeticCounts[index];
-    }
-
-    public void SetSwapLocked(bool locked)
-    {
-        _swapLocked = locked;
     }
 
     public bool GetIsOpen() => _isOpen;

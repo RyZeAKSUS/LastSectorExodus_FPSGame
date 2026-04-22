@@ -23,4 +23,9 @@ public class ItemDefinition : ScriptableObject
     public float healAmount = 0f;
     public float hungerAmount = 0f;
     public float thirstAmount = 0f;
+
+    [Header("Posição na mão (apenas cosméticos)")]
+    public Vector3 handPosition = new Vector3(0.3f, -0.2f, 0.5f);
+    public Vector3 handRotation = new Vector3(0f, 180f, 0f);
+    public Vector3 handScale = new Vector3(0.3f, 0.3f, 0.3f);
 }

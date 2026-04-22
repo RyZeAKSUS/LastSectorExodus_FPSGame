@@ -19,3 +19,8 @@ MonoBehaviour:
   pickupPrefab: {fileID: 8567993723658421202, guid: d847c65664ef49741a32215db444d91b, type: 3}
   weaponIndex: 0
   healAmount: 25
+  hungerAmount: 0
+  thirstAmount: 0
+  handPosition: {x: 0.3, y: -0.22, z: 0.5}
+  handRotation: {x: 0, y: -180, z: 0}
+  handScale: {x: 0.4, y: 0.4, z: 0.4}
