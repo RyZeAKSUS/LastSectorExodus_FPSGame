@@ -7,6 +7,7 @@ public class FPSHandsController : MonoBehaviour
     public SkinnedMeshRenderer handsMesh;
     public GunSwitcher gunSwitcher;
     public Transform weaponHolder;
+    public Transform animationOffset;
 
     [Header("Posições por arma")]
     public Vector3[] handPositions = new Vector3[5];
@@ -56,6 +57,7 @@ public class FPSHandsController : MonoBehaviour
                 handsMesh.enabled = false;
             }
             _activeWeaponTransform = null;
+            ResetAnimationOffset();
             return;
         }
 
@@ -75,6 +77,8 @@ public class FPSHandsController : MonoBehaviour
         _handsBaseRotation = Quaternion.Euler(handRotations[slot]);
         transform.localPosition = _handsBasePosition;
         transform.localRotation = _handsBaseRotation;
+
+        ResetAnimationOffset();
 
         if (slot == 0 && weaponHolder != null)
         {
@@ -101,17 +105,24 @@ public class FPSHandsController : MonoBehaviour
     void FollowWeaponAnimation()
     {
         if (_activeWeaponTransform == null) return;
+        if (animationOffset == null) return;
 
         Vector3 positionDelta = _activeWeaponTransform.localPosition - _weaponBasePosition;
         Quaternion rotationDelta = _activeWeaponTransform.localRotation
             * Quaternion.Inverse(_weaponBaseRotation);
 
-        transform.localPosition = _handsBasePosition
-            + positionDelta * animationFollowStrength;
-        transform.localRotation = Quaternion.Slerp(
-            _handsBaseRotation,
-            rotationDelta * _handsBaseRotation,
+        animationOffset.localPosition = positionDelta * animationFollowStrength;
+        animationOffset.localRotation = Quaternion.Slerp(
+            Quaternion.identity,
+            rotationDelta,
             animationFollowStrength
         );
+    }
+
+    void ResetAnimationOffset()
+    {
+        if (animationOffset == null) return;
+        animationOffset.localPosition = Vector3.zero;
+        animationOffset.localRotation = Quaternion.identity;
     }
 }

@@ -310,8 +310,6 @@ public class Gun : MonoBehaviour
         UpdateFireModeUI();
     }
 
-    public int GetBulletsLeft() => _bulletsLeft;
-
     void UpdateAmmoUI()
     {
         if (ammoText == null) return;
@@ -339,4 +337,7 @@ public class Gun : MonoBehaviour
             }
         }
     }
+
+    public int GetBulletsLeft() => _bulletsLeft;
+    public bool IsReloading() => _isReloading;
 }

@@ -85,4 +85,7 @@ public class GunSwitcher : MonoBehaviour
             }
         }
     }
+
+    public float GetLastEquipSoundTime() => _lastEquipSoundTime;
+    public void UpdateLastEquipSoundTime() => _lastEquipSoundTime = Time.time;
 }
