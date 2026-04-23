@@ -165,9 +165,12 @@ public class WeaponProceduralAnimation : MonoBehaviour
         }
         else if (isWalking)
         {
+            bool isCrouching = FindFirstObjectByType<PlayerMovement>()?.IsCrouching() ?? false;
+            float crouchMultiplier = isCrouching ? 0.3f : 1f;
+
             _bobTimer += Time.deltaTime * walkBobSpeed;
-            float bobY = Mathf.Sin(_bobTimer) * walkBobAmountY;
-            float bobX = Mathf.Cos(_bobTimer * 0.5f) * walkBobAmountX;
+            float bobY = Mathf.Sin(_bobTimer) * walkBobAmountY * crouchMultiplier;
+            float bobX = Mathf.Cos(_bobTimer * 0.5f) * walkBobAmountX * crouchMultiplier;
             _targetPosition += new Vector3(bobX, bobY, 0f);
         }
         else

@@ -179,7 +179,8 @@ public class Gun : MonoBehaviour
         ADSSystem.Instance?.TriggerSniperShake();
 
         bool isAiming = ADSSystem.Instance != null && ADSSystem.Instance.IsAiming;
-        float currentSpread = isAiming ? adsSpread : hipSpread;
+        bool isCrouching = FindFirstObjectByType<PlayerMovement>()?.IsCrouching() ?? false;
+        float currentSpread = isAiming ? adsSpread : (isCrouching ? hipSpread * 0.5f : hipSpread);
 
         Vector3 forward = playerCamera.transform.forward;
         forward += playerCamera.transform.right * Random.Range(-currentSpread, currentSpread);
