@@ -173,6 +173,7 @@ public class EnemyController : MonoBehaviour
     {
         if (assignedSpawner == null) return;
         _spawnerAlertState[assignedSpawner] = true;
+        assignedSpawner.OnFirstEnemyAlert();
     }
 
     void Update()

@@ -31,6 +31,7 @@ public class EnemySpawner : MonoBehaviour
     private int _enemiesAlive = 0;
     private bool _waitingForNextWave = false;
     private bool _zoneComplete = false;
+    private bool _firstAlertReceived = false;
 
     void Start()
     {
@@ -110,9 +111,13 @@ public class EnemySpawner : MonoBehaviour
 
         _enemiesAlive = enemiesToSpawn;
 
-        WaveNotification.Instance?.Show(
-            zoneName + " - Wave " + _currentWave + "/" + totalWaves
-        );
+        if (_currentWave > 1)
+        {
+            WaveNotification.Instance?.Show(
+                zoneName + " - Wave " + _currentWave + "/" + totalWaves
+            );
+            _firstAlertReceived = false;
+        }
 
         if (_currentWave > 1)
         {
@@ -206,6 +211,16 @@ public class EnemySpawner : MonoBehaviour
 
             Instantiate(item.pickupPrefab, spawnPos, item.pickupPrefab.transform.rotation);
         }
+    }
+
+    public void OnFirstEnemyAlert()
+    {
+        if (_firstAlertReceived) return;
+        _firstAlertReceived = true;
+
+        WaveNotification.Instance?.Show(
+            zoneName + " - Wave " + _currentWave + "/" + totalWaves
+        );
     }
 
     public void EnemyDied() => _enemiesAlive--;
