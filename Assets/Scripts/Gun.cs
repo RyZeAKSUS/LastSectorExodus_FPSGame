@@ -20,6 +20,15 @@ public class Gun : MonoBehaviour
     public int reserveAmmo = 90;
     public int maxReserveAmmo = 120;
 
+    [Header("Dispersão")]
+    public float hipSpread = 0.03f;
+    public float adsSpread = 0.005f;
+
+    [Header("ADS")]
+    public Vector3 adsPosition;
+    public Vector3 adsRotation;
+    public float adsFOV = 45f;
+
     [Header("Referências")]
     public Camera playerCamera;
     public Transform muzzlePoint;
@@ -45,12 +54,12 @@ public class Gun : MonoBehaviour
     public float recoilSpeed = 10f;
     public float recoilReturnSpeed = 6f;
 
+    [Header("Wall Check")]
+    public float wallCheckDistance = 0.8f;
+
     [Header("UI Recarga")]
     public UnityEngine.UI.Slider reloadBar;
     public GameObject reloadBarObject;
-
-    [Header("Wall Check")]
-    public float wallCheckDistance = 0.8f;
 
     private int _bulletsLeft;
     private bool _isReloading;
@@ -98,8 +107,8 @@ public class Gun : MonoBehaviour
         if (VictoryMenu.victoryShowing) return;
         if (InventorySystem.Instance != null && InventorySystem.Instance.GetIsOpen()) return;
         if (RewardScreen.Instance != null && RewardScreen.Instance.IsShowing()) return;
-        if (_isReloading) return;
         if (WeaponWallCheck.IsWeaponLowered) return;
+        if (_isReloading) return;
 
         if (fireMode == FireMode.Automatic)
         {
@@ -149,7 +158,9 @@ public class Gun : MonoBehaviour
             }
         }
 
-        if (muzzleFlashes != null && muzzleFlashes.Length > 0)
+        bool isSniperScoped = ADSSystem.Instance != null && ADSSystem.Instance.IsSniperScoped;
+
+        if (!isSniperScoped && muzzleFlashes != null && muzzleFlashes.Length > 0)
         {
             int randomIndex = Random.Range(0, muzzleFlashes.Length);
             if (muzzleFlashes[randomIndex] != null)
@@ -165,8 +176,17 @@ public class Gun : MonoBehaviour
         }
 
         ApplyRecoil();
+        ADSSystem.Instance?.TriggerSniperShake();
 
-        Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
+        bool isAiming = ADSSystem.Instance != null && ADSSystem.Instance.IsAiming;
+        float currentSpread = isAiming ? adsSpread : hipSpread;
+
+        Vector3 forward = playerCamera.transform.forward;
+        forward += playerCamera.transform.right * Random.Range(-currentSpread, currentSpread);
+        forward += playerCamera.transform.up * Random.Range(-currentSpread, currentSpread);
+        forward.Normalize();
+
+        Ray ray = new Ray(playerCamera.transform.position, forward);
         Vector3 targetPoint = Physics.Raycast(ray, out RaycastHit hit, range)
             ? hit.point
             : ray.GetPoint(range);

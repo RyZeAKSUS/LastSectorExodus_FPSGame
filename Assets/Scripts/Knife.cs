@@ -4,9 +4,9 @@ using System.Collections;
 public class Knife : MonoBehaviour
 {
     [Header("Configuração")]
-    public float damage = 40f;
+    public float damage = 90f;
     public float range = 4f;
-    public float attackCooldown = 2.5f;
+    public float attackCooldown = 2.0f;
     public float dashForce = 12f;
     public float dashDuration = 0.2f;
     public float invincibilityDuration = 0.45f;
@@ -15,6 +15,9 @@ public class Knife : MonoBehaviour
     public float slashRotationAmount = 60f;
     public float slashSpeed = 20f;
     public float slashReturnSpeed = 10f;
+
+    [Header("Wall Check")]
+    public float wallCheckDistance = 0.5f;
 
     [Header("Referências")]
     public Camera playerCamera;
@@ -25,9 +28,6 @@ public class Knife : MonoBehaviour
 
     [Header("Trail")]
     public TrailRenderer trailRenderer;
-
-    [Header("Wall Check")]
-    public float wallCheckDistance = 0.5f;
 
     private float _nextAttackTime;
     private CharacterController _cc;
@@ -169,7 +169,8 @@ public class Knife : MonoBehaviour
 
         foreach (RaycastHit hit in hits)
         {
-            if (hit.collider.TryGetComponent(out EnemyHealth enemy))
+            EnemyHealth enemy = hit.collider.GetComponent<EnemyHealth>();
+            if (enemy != null)
             {
                 enemy.TakeDamage(damage, false);
             }
@@ -177,5 +178,5 @@ public class Knife : MonoBehaviour
     }
 
     public bool IsInvincible() => _isInvincible;
-    public bool IsAttacking() => _isAttacking;
+    public bool IsAttackingAnim() => _isAttacking;
 }

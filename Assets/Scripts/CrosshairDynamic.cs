@@ -61,4 +61,12 @@ public class CrosshairDynamic : MonoBehaviour
         if (left != null) left.anchoredPosition = new Vector2(-_currentSpread, 0);
         if (right != null) right.anchoredPosition = new Vector2(_currentSpread, 0);
     }
+
+    public void SetAiming(bool isAiming)
+    {
+        if (isAiming)
+        {
+            _currentSpread = Mathf.Lerp(_currentSpread, baseSpread * 0.3f, Time.deltaTime * 15f);
+        }
+    }
 }

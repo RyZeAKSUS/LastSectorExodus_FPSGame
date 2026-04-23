@@ -23,8 +23,6 @@ public class PlayerMovement : MonoBehaviour
     public AudioClip jumpSound;
     public float walkStepInterval = 0.5f;
     public float runStepInterval = 0.3f;
-
-    [Header("Volume")]
     public float walkVolume = 0.4f;
     public float runVolume = 0.7f;
 
@@ -153,7 +151,11 @@ public class PlayerMovement : MonoBehaviour
             ? AdrenalineSystem.Instance.GetSpeedMultiplier()
             : 1f;
 
-        float speed = baseSpeed * adrenalineMultiplier;
+        float adsMultiplier = ADSSystem.Instance != null
+            ? ADSSystem.Instance.GetSpeedMultiplier()
+            : 1f;
+
+        float speed = baseSpeed * adrenalineMultiplier * adsMultiplier;
 
         Vector3 move = transform.right * x + transform.forward * z;
         _cc.Move(move * speed * Time.deltaTime);

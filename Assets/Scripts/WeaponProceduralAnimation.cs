@@ -9,7 +9,7 @@ public class WeaponProceduralAnimation : MonoBehaviour
 
     [Header("Idle - respiração")]
     public float idleBobSpeed = 1.2f;
-    public float idleBobAmountY = 0.01f;
+    public float idleBobAmountY = 0.008f;
     public float idleRotationAmount = 0.3f;
 
     [Header("Walk - balanço")]
@@ -32,6 +32,10 @@ public class WeaponProceduralAnimation : MonoBehaviour
     public float swayRotationAmount = 1.7f;
     public float swaySmoothing = 6f;
     public float swayMaxAmount = 0.06f;
+
+    [Header("ADS - redução de animação")]
+    public float adsBobMultiplier = 0.2f;
+    public float adsSwayMultiplier = 0.1f;
 
     [Header("Suavização")]
     public float smoothSpeed = 8f;
@@ -62,6 +66,26 @@ public class WeaponProceduralAnimation : MonoBehaviour
 
         int slot = InventorySystem.Instance.GetActiveSlot();
 
+        bool isAiming = ADSSystem.Instance != null && ADSSystem.Instance.IsAiming;
+
+        if (isAiming)
+        {
+            Vector3 adsPos = ADSSystem.Instance.CurrentADSPosition;
+            Quaternion adsRot = Quaternion.Euler(ADSSystem.Instance.CurrentADSRotation);
+
+            weaponHolder.localPosition = Vector3.Lerp(
+                weaponHolder.localPosition,
+                adsPos,
+                Time.deltaTime * smoothSpeed
+            );
+            weaponHolder.localRotation = Quaternion.Slerp(
+                weaponHolder.localRotation,
+                adsRot,
+                Time.deltaTime * smoothSpeed
+            );
+            return;
+        }
+
         float speed = characterController != null
             ? new Vector3(
                 characterController.velocity.x,
@@ -71,7 +95,6 @@ public class WeaponProceduralAnimation : MonoBehaviour
 
         bool isRunning = speed > 4f;
         bool isWalking = speed > 0.1f && !isRunning;
-
         bool isReloading = slot >= 1 && slot <= 4 && IsCurrentGunReloading(slot);
 
         CalculateSway();

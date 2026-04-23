@@ -41,6 +41,17 @@ public class FPSHandsController : MonoBehaviour
             UpdateHands();
         }
 
+        if (handsMesh != null)
+        {
+            bool sniperScoped = slot == 4
+                && ADSSystem.Instance != null
+                && ADSSystem.Instance.IsAiming;
+
+            bool cosmeticActive = slot >= 5;
+
+            handsMesh.enabled = !sniperScoped && !cosmeticActive;
+        }
+
         FollowWeaponAnimation();
     }
 
@@ -52,18 +63,9 @@ public class FPSHandsController : MonoBehaviour
 
         if (slot >= 5)
         {
-            if (handsMesh != null)
-            {
-                handsMesh.enabled = false;
-            }
             _activeWeaponTransform = null;
             ResetAnimationOffset();
             return;
-        }
-
-        if (handsMesh != null)
-        {
-            handsMesh.enabled = true;
         }
 
         bool twoHanded = slot == 2 || slot == 3 || slot == 4;
