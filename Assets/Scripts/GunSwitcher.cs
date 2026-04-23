@@ -13,10 +13,7 @@ public class GunSwitcher : MonoBehaviour
     private float _lastEquipSoundTime = -999f;
     private bool _isFirstEquip = true;
 
-    void Start()
-    {
-        HideAllWeapons();
-    }
+    void Start() {}
 
     public void EquipWeapon(int index)
     {

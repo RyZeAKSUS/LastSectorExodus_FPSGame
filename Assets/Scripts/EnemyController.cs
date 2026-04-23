@@ -12,6 +12,12 @@ public class EnemyController : MonoBehaviour
     public float rageHealthThreshold = 0.5f;
     private bool _rageActivated = false;
 
+    [Header("Patrulha")]
+    public float patrolRadius = 8f;
+    public float patrolWaitTime = 2f;
+    public float detectionRadius = 20f;
+    public float losDetectionRadius = 35f;
+
     [Header("Sons")]
     public AudioSource audioSource;
     public AudioClip hurtSound;
@@ -51,6 +57,15 @@ public class EnemyController : MonoBehaviour
     private float _nextRoarTime = 0f;
     private float _footstepTimer = 0f;
 
+    private Vector3 _spawnPosition;
+    private Vector3 _patrolTarget;
+    private float _patrolWaitTimer = 0f;
+    private bool _isWaiting = false;
+    private bool _isChasingPlayer = false;
+
+    private static System.Collections.Generic.Dictionary<EnemySpawner, bool> _spawnerAlertState
+        = new System.Collections.Generic.Dictionary<EnemySpawner, bool>();
+
     void Awake()
     {
         _agent = GetComponent<NavMeshAgent>();
@@ -59,9 +74,11 @@ public class EnemyController : MonoBehaviour
 
     void Start()
     {
-        _animator = null;
+        _spawnPosition = transform.position;
+        _patrolTarget = transform.position;
 
-        foreach (Transform child in GetComponentInChildren<Transform>())
+        _animator = null;
+        foreach (Transform child in GetComponentsInChildren<Transform>())
         {
             if (child.gameObject.activeInHierarchy)
             {
@@ -125,11 +142,11 @@ public class EnemyController : MonoBehaviour
 
         if (_hasIdleIndex)
         {
-            _animator.SetInteger("idleIndex", 0);
+            _animator?.SetInteger("idleIndex", 0);
         }
         if (_hasWalkIndex)
         {
-            _animator.SetInteger("walkIndex", 0);
+            _animator?.SetInteger("walkIndex", 0);
         }
 
         if (_isActive)
@@ -138,6 +155,24 @@ public class EnemyController : MonoBehaviour
         }
 
         _nextRoarTime = Time.time + Random.Range(roarInterval, roarInterval + roarIntervalVariance);
+
+        if (assignedSpawner != null && IsZoneAlerted())
+        {
+            _isChasingPlayer = true;
+        }
+    }
+
+    bool IsZoneAlerted()
+    {
+        if (assignedSpawner == null) return false;
+        return _spawnerAlertState.ContainsKey(assignedSpawner)
+            && _spawnerAlertState[assignedSpawner];
+    }
+
+    void AlertZone()
+    {
+        if (assignedSpawner == null) return;
+        _spawnerAlertState[assignedSpawner] = true;
     }
 
     void Update()
@@ -151,19 +186,9 @@ public class EnemyController : MonoBehaviour
 
         if (!_isActive)
         {
-            _idleTimer += Time.deltaTime;
-            if (_idleTimer >= _idleChangeTime)
-            {
-                _idleTimer = 0f;
-                if (_hasIdleIndex)
-                {
-                    _animator.SetInteger("idleIndex", Random.Range(0, _maxIdleIndex + 1));
-                }
-            }
+            HandleIdleAnimation();
             return;
         }
-
-        float distance = Vector3.Distance(transform.position, player.position);
 
         if (isBoss && !_rageActivated)
         {
@@ -176,18 +201,75 @@ public class EnemyController : MonoBehaviour
             }
         }
 
-        if (distance <= data.attackRange)
+        float distanceToPlayer = Vector3.Distance(transform.position, player.position);
+        bool canSeePlayer = CanSeePlayer(distanceToPlayer);
+
+        if (canSeePlayer && !_isChasingPlayer)
         {
-            _agent.SetDestination(transform.position);
-            if (_isMoving)
+            _isChasingPlayer = true;
+            AlertZone();
+        }
+
+        if (!_isChasingPlayer && IsZoneAlerted())
+        {
+            _isChasingPlayer = true;
+        }
+
+        if (_isChasingPlayer && distanceToPlayer > detectionRadius * 1.5f && !canSeePlayer)
+        {
+            _isChasingPlayer = false;
+            if (assignedSpawner != null)
             {
-                _isMoving = false;
-                _animator?.SetBool("isWalking", false);
-                if (_hasIsRunning)
+                _spawnerAlertState[assignedSpawner] = false;
+            }
+        }
+
+        if (_isChasingPlayer)
+        {
+            ChasePlayer();
+        }
+        else
+        {
+            Patrol();
+        }
+
+        HandleRoar();
+    }
+
+    bool CanSeePlayer(float distance)
+    {
+        if (distance <= detectionRadius)
+        {
+            return true;
+        }
+
+        if (distance <= losDetectionRadius)
+        {
+            Vector3 directionToPlayer = (player.position - transform.position).normalized;
+            if (Physics.Raycast(transform.position + Vector3.up, directionToPlayer,
+                out RaycastHit hit, losDetectionRadius))
+            {
+                if (hit.transform == player || hit.transform.IsChildOf(player))
                 {
-                    _animator.SetBool("isRunning", false);
+                    return true;
                 }
             }
+        }
+
+        return false;
+    }
+
+    void ChasePlayer()
+    {
+        _agent.SetDestination(player.position);
+
+        float distance = Vector3.Distance(transform.position, player.position);
+
+        if (distance <= data.attackRange)
+        {
+            _agent.isStopped = true;
+            SetMoving(false);
+
             if (Time.time >= _nextAttackTime)
             {
                 _nextAttackTime = Time.time + data.attackRate;
@@ -196,51 +278,113 @@ public class EnemyController : MonoBehaviour
         }
         else
         {
-            _agent.SetDestination(player.position);
-            if (!_isMoving)
-            {
-                _isMoving = true;
-                if (isBoss && _rageActivated && _hasIsRunning)
-                {
-                    _animator.SetBool("isRunning", true);
-                    if (_hasRunIndex)
-                    {
-                        _animator.SetInteger("runIndex", Random.Range(0, 3));
-                    }
-                }
-                else
-                {
-                    _animator?.SetBool("isWalking", true);
-                    if (_hasWalkIndex)
-                    {
-                        _animator.SetInteger("walkIndex", Random.Range(0, _maxWalkIndex + 1));
-                    }
-                }
-            }
-
-            HandleFootsteps();
+            _agent.isStopped = false;
+            SetMoving(true);
         }
 
-        if (!_isMoving)
+        HandleFootsteps();
+    }
+
+    void Patrol()
+    {
+        if (_isWaiting)
         {
-            _idleTimer += Time.deltaTime;
-            if (_idleTimer >= _idleChangeTime)
+            _patrolWaitTimer -= Time.deltaTime;
+            SetMoving(false);
+            _agent.isStopped = true;
+
+            if (_patrolWaitTimer <= 0f)
             {
-                _idleTimer = 0f;
-                if (_hasIdleIndex)
-                {
-                    _animator.SetInteger("idleIndex", Random.Range(0, _maxIdleIndex + 1));
-                }
+                _isWaiting = false;
+                ChooseNewPatrolTarget();
+            }
+            return;
+        }
+
+        float distanceToTarget = Vector3.Distance(transform.position, _patrolTarget);
+
+        if (distanceToTarget < 1f)
+        {
+            _isWaiting = true;
+            _patrolWaitTimer = patrolWaitTime + Random.Range(0f, 2f);
+            return;
+        }
+
+        _agent.isStopped = false;
+        _agent.SetDestination(_patrolTarget);
+        SetMoving(true);
+        HandleFootsteps();
+    }
+
+    void ChooseNewPatrolTarget()
+    {
+        for (int i = 0; i < 10; i++)
+        {
+            Vector3 randomPoint = _spawnPosition + Random.insideUnitSphere * patrolRadius;
+            randomPoint.y = _spawnPosition.y;
+
+            if (NavMesh.SamplePosition(randomPoint, out NavMeshHit hit, 2f, NavMesh.AllAreas))
+            {
+                _patrolTarget = hit.position;
+                return;
             }
         }
 
-        HandleRoar();
+        _patrolTarget = _spawnPosition;
+    }
+
+    void SetMoving(bool moving)
+    {
+        if (_isMoving == moving) return;
+        _isMoving = moving;
+
+        if (moving)
+        {
+            if (isBoss && _rageActivated && _hasIsRunning)
+            {
+                _animator?.SetBool("isRunning", true);
+                if (_hasRunIndex)
+                {
+                    _animator?.SetInteger("runIndex", Random.Range(0, 3));
+                }
+            }
+            else
+            {
+                _animator?.SetBool("isWalking", true);
+                if (_hasWalkIndex)
+                {
+                    _animator?.SetInteger("walkIndex", Random.Range(0, _maxWalkIndex + 1));
+                }
+            }
+        }
+        else
+        {
+            _animator?.SetBool("isWalking", false);
+            if (_hasIsRunning)
+            {
+                _animator?.SetBool("isRunning", false);
+            }
+        }
+    }
+
+    void HandleIdleAnimation()
+    {
+        _idleTimer += Time.deltaTime;
+        if (_idleTimer >= _idleChangeTime)
+        {
+            _idleTimer = 0f;
+            if (_hasIdleIndex)
+            {
+                _animator?.SetInteger("idleIndex", Random.Range(0, _maxIdleIndex + 1));
+            }
+        }
     }
 
     void HandleFootsteps()
     {
         if (footstepSounds == null || footstepSounds.Length == 0) return;
         if (audioSource == null) return;
+        if (!_isMoving) return;
 
         _footstepTimer += Time.deltaTime;
         if (_footstepTimer >= footstepInterval)
@@ -277,13 +421,22 @@ public class EnemyController : MonoBehaviour
         {
             _agent.isStopped = false;
         }
+
+        if (IsZoneAlerted())
+        {
+            _isChasingPlayer = true;
+        }
+        else
+        {
+            ChooseNewPatrolTarget();
+        }
     }
 
     void Attack()
     {
         if (_hasAttackIndex)
         {
-            _animator.SetInteger("attackIndex", Random.Range(0, _maxAttackIndex + 1));
+            _animator?.SetInteger("attackIndex", Random.Range(0, _maxAttackIndex + 1));
         }
         _animator?.SetTrigger("attack");
         player.GetComponent<PlayerHealth>().TakeDamage(data.attackDamage);
@@ -296,7 +449,7 @@ public class EnemyController : MonoBehaviour
             if (_hasHitIndex)
             {
                 int maxHitIndex = isBoss ? 2 : (gameObject.name.Contains("Mutant") ? 3 : 0);
-                _animator.SetInteger("hitIndex", Random.Range(0, maxHitIndex + 1));
+                _animator?.SetInteger("hitIndex", Random.Range(0, maxHitIndex + 1));
             }
             _animator?.SetTrigger("takehit");
 
@@ -304,6 +457,9 @@ public class EnemyController : MonoBehaviour
             {
                 audioSource.PlayOneShot(hurtSound);
             }
+
+            _isChasingPlayer = true;
+            AlertZone();
         }
     }
 
@@ -317,7 +473,7 @@ public class EnemyController : MonoBehaviour
         if (_hasDeathIndex)
         {
             int maxDeathIndex = isBoss ? 2 : (gameObject.name.Contains("Mutant") ? 3 : 0);
-            _animator.SetInteger("deathIndex", Random.Range(0, maxDeathIndex + 1));
+            _animator?.SetInteger("deathIndex", Random.Range(0, maxDeathIndex + 1));
         }
         _animator?.SetTrigger("death");
 

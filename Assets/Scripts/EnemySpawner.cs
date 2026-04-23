@@ -1,5 +1,4 @@
 using UnityEngine;
-using TMPro;
 using System.Collections;
 
 public class EnemySpawner : MonoBehaviour
@@ -24,14 +23,22 @@ public class EnemySpawner : MonoBehaviour
     [Header("Drops ao completar a zona")]
     public ItemDefinition[] zoneDropItems;
 
-    [Header("Referências")]
-    public CombatZone combatZone;
+    [Header("Ativação")]
+    public bool activateOnStart = false;
     public bool activated = false;
 
     private int _currentWave = 0;
     private int _enemiesAlive = 0;
     private bool _waitingForNextWave = false;
     private bool _zoneComplete = false;
+
+    void Start()
+    {
+        if (activateOnStart)
+        {
+            Activate();
+        }
+    }
 
     void Update()
     {
@@ -174,7 +181,7 @@ public class EnemySpawner : MonoBehaviour
     {
         WaveNotification.Instance?.Show(zoneName + " - Concluída!");
         SpawnZoneDrops();
-        combatZone?.OnZoneComplete();
+        GameManager.Instance?.OnZoneCompleted();
     }
 
     void SpawnZoneDrops()
@@ -187,11 +194,7 @@ public class EnemySpawner : MonoBehaviour
             if (item == null || item.pickupPrefab == null) continue;
 
             Transform spawnPoint = spawnPoints[0];
-            Vector3 offset = new Vector3(
-                Random.Range(-2f, 2f),
-                0f,
-                Random.Range(-2f, 2f)
-            );
+            Vector3 offset = new Vector3(Random.Range(-2f, 2f), 0f, Random.Range(-2f, 2f));
             Vector3 spawnPos = spawnPoint.position + offset;
 
             Vector3 rayOrigin = spawnPos + Vector3.up * 5f;

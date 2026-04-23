@@ -167,6 +167,10 @@ MonoBehaviour:
   startActive: 0
   isBoss: 0
   rageHealthThreshold: 0.5
+  patrolRadius: 8
+  patrolWaitTime: 2
+  detectionRadius: 25
+  losDetectionRadius: 45
   audioSource: {fileID: 2532358232195116239}
   hurtSound: {fileID: 8300000, guid: 497f3909acd1abc4186880c3c27b0af0, type: 3}
   deathSound: {fileID: 8300000, guid: f7aae1076160ced488739d07212ba0e5, type: 3}
