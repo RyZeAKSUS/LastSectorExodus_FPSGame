@@ -5,13 +5,11 @@ public class WorldItemPickup : MonoBehaviour
     public ItemDefinition itemDefinition;
     public GameObject indicatorPrefab;
 
-    private Vector3 _myPosition;
     private GameObject _indicator;
+    private bool _isBeingPickedUp = false;
 
     void Start()
     {
-        _myPosition = transform.position;
-
         if (indicatorPrefab != null)
         {
             _indicator = Instantiate(
@@ -19,29 +17,33 @@ public class WorldItemPickup : MonoBehaviour
                 transform.position + Vector3.up * 1.5f,
                 Quaternion.identity
             );
+
             _indicator.transform.SetParent(transform);
         }
     }
 
     public bool CanPickup()
     {
-        if (itemDefinition == null || InventorySystem.Instance == null) return false;
+        if (itemDefinition == null) return false;
+        if (InventorySystem.Instance == null) return false;
 
         if (itemDefinition.category == ItemCategory.Weapon)
         {
             return InventorySystem.Instance.CanPickupWeapon(itemDefinition.weaponIndex);
         }
-        else
-        {
-            return InventorySystem.Instance.CanPickupCosmetic(itemDefinition.weaponIndex);
-        }
+
+        return InventorySystem.Instance.CanPickupCosmetic(itemDefinition.weaponIndex);
     }
 
     public void Pickup()
     {
-        if (itemDefinition == null || InventorySystem.Instance == null) return;
+        if (_isBeingPickedUp) return;
+        if (itemDefinition == null) return;
+        if (InventorySystem.Instance == null) return;
 
-        bool success = false;
+        _isBeingPickedUp = true;
+
+        bool success;
 
         if (itemDefinition.category == ItemCategory.Weapon)
         {
@@ -55,10 +57,19 @@ public class WorldItemPickup : MonoBehaviour
         if (success)
         {
             if (_indicator != null)
-            {
                 Destroy(_indicator);
-            }
+
             Destroy(gameObject);
         }
+        else
+        {
+            _isBeingPickedUp = false;
+        }
+    }
+
+    public string GetPickupName()
+    {
+        if (itemDefinition == null) return "Item";
+        return itemDefinition.itemName;
     }
 }

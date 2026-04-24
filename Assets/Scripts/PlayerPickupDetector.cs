@@ -13,27 +13,7 @@ public class PlayerPickupDetector : MonoBehaviour
 
     void Update()
     {
-        if (PauseMenu.gameIsPaused)
-        {
-            ClearAndHide();
-            return;
-        }
-        if (GameOverMenu.gameOverShowing)
-        {
-            ClearAndHide();
-            return;
-        }
-        if (VictoryMenu.victoryShowing)
-        {
-            ClearAndHide();
-            return;
-        }
-        if (InventorySystem.Instance != null && InventorySystem.Instance.GetIsOpen())
-        {
-            ClearAndHide();
-            return;
-        }
-        if (RewardScreen.Instance != null && RewardScreen.Instance.IsShowing())
+        if (ShouldBlockPickup())
         {
             ClearAndHide();
             return;
@@ -44,51 +24,78 @@ public class PlayerPickupDetector : MonoBehaviour
 
         if (_currentPickup != null)
         {
+            bool canPickup = _currentPickup.CanPickup();
+
             ShowText(
-                !_currentPickup.CanPickup()
-                    ? "Inventário Cheio"
-                    : "F - Apanhar " + _currentPickup.itemDefinition.itemName
+                canPickup
+                    ? "F - Apanhar " + _currentPickup.GetPickupName()
+                    : "Inventário Cheio"
             );
 
-            if (Input.GetKeyDown(KeyCode.F))
+            if (Input.GetKeyDown(KeyCode.F) && canPickup)
             {
                 _currentPickup.Pickup();
             }
-        }
-        else if (_currentAmmoBox != null)
-        {
-            if (!_currentAmmoBox.IsAvailable())
-            {
-                ShowText("Caixa vazia");
-            }
-            else
-            {
-                int activeSlot = InventorySystem.Instance.GetActiveSlot();
-                if (activeSlot <= 0 || activeSlot > 4)
-                {
-                    ShowText("Equipa uma arma primeiro");
-                }
-                else if (_currentAmmoBox.IsAmmoFull())
-                {
-                    ShowText("Munição cheia");
-                }
-                else
-                {
-                    ShowText("F - Apanhar munição");
-                }
-            }
 
-            if (Input.GetKeyDown(KeyCode.F))
-            {
-                if (_currentAmmoBox.IsAvailable() && !_currentAmmoBox.IsAmmoFull())
-                {
-                    _currentAmmoBox.Collect();
-                }
-            }
+            return;
+        }
+
+        if (_currentAmmoBox != null)
+        {
+            HandleAmmoBox();
+            return;
+        }
+
+        HideText();
+    }
+
+    bool ShouldBlockPickup()
+    {
+        if (PauseMenu.gameIsPaused) return true;
+        if (GameOverMenu.gameOverShowing) return true;
+        if (VictoryMenu.victoryShowing) return true;
+        if (InventorySystem.Instance != null && InventorySystem.Instance.GetIsOpen()) return true;
+        if (RewardScreen.Instance != null && RewardScreen.Instance.IsShowing()) return true;
+
+        return false;
+    }
+
+    void HandleAmmoBox()
+    {
+        if (InventorySystem.Instance == null)
+        {
+            HideText();
+            return;
+        }
+
+        if (!_currentAmmoBox.IsAvailable())
+        {
+            ShowText("Caixa vazia");
         }
         else
         {
-            HideText();
+            int activeSlot = InventorySystem.Instance.GetActiveSlot();
+
+            if (activeSlot <= 0 || activeSlot > 4)
+            {
+                ShowText("Equipa uma arma primeiro");
+            }
+            else if (_currentAmmoBox.IsAmmoFull())
+            {
+                ShowText("Munição cheia");
+            }
+            else
+            {
+                ShowText("F - Apanhar munição");
+            }
+        }
+
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            if (_currentAmmoBox.IsAvailable() && !_currentAmmoBox.IsAmmoFull())
+            {
+                _currentAmmoBox.Collect();
+            }
         }
     }
 
@@ -108,15 +115,17 @@ public class PlayerPickupDetector : MonoBehaviour
         foreach (Collider col in colliders)
         {
             WorldItemPickup pickup = col.GetComponent<WorldItemPickup>();
+
             if (pickup == null)
-            {
                 pickup = col.GetComponentInParent<WorldItemPickup>();
-            }
-            if (pickup == null || seen.Contains(pickup)) continue;
+
+            if (pickup == null) continue;
+            if (seen.Contains(pickup)) continue;
 
             seen.Add(pickup);
 
             float dist = Vector3.Distance(transform.position, pickup.transform.position);
+
             if (dist < closestDist)
             {
                 closestDist = dist;
@@ -136,7 +145,10 @@ public class PlayerPickupDetector : MonoBehaviour
 
         foreach (AmmoBox box in allBoxes)
         {
+            if (box == null) continue;
+
             float dist = Vector3.Distance(transform.position, box.transform.position);
+
             if (dist < detectionRadius && dist < closestDist)
             {
                 closestDist = dist;
@@ -150,6 +162,7 @@ public class PlayerPickupDetector : MonoBehaviour
     void ShowText(string message)
     {
         if (interactText == null) return;
+
         interactText.gameObject.SetActive(true);
         interactText.text = message;
     }
@@ -157,9 +170,7 @@ public class PlayerPickupDetector : MonoBehaviour
     void HideText()
     {
         if (interactText != null)
-        {
             interactText.gameObject.SetActive(false);
-        }
     }
 
     void ClearAndHide()
