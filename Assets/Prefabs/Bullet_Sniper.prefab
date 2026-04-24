@@ -152,13 +152,12 @@ MonoBehaviour:
   lifetime: 3
   impactEffect: {fileID: 4201763842987090765, guid: ed7916353fa6dea4e95cdf94f1329d89, type: 3}
   bloodEffect: {fileID: 4201763842987090765, guid: f5855fc6d90868e48a20286ed07d0188, type: 3}
-  bulletHolePrefab: {fileID: 7050284581519528967, guid: 72c2c08266b420d43bd6b69e0510bdc8, type: 3}
-  bulletHoleSize: 0.05
   fleshImpactSounds:
   - {fileID: 8300000, guid: 8d78004582b21934db3af15891d3112d, type: 3}
   - {fileID: 8300000, guid: 9827b8502de89a44fa1f99578f19ad9c, type: 3}
   surfaceImpactSound: {fileID: 8300000, guid: b7ed30d7e0911a84396dbd077d975dc5, type: 3}
   hitMarkerSound: {fileID: 8300000, guid: 82ab6a17638769a43b5c82809e78c8a9, type: 3}
+  sfxMixerGroup: {fileID: 4015807224432178547, guid: 1f84f5b35cfcb6046a37a12180e86320, type: 2}
   headshotMultiplier: 2.5
   headshotLayer:
     serializedVersion: 2

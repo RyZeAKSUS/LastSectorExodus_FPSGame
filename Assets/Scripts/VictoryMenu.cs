@@ -4,10 +4,13 @@ using TMPro;
 
 public class VictoryMenu : MonoBehaviour
 {
-    public GameObject victoryPanel;
-    public GameObject hud;
-    public TextMeshProUGUI finalScoreText;
     public static bool victoryShowing = false;
+
+    public GameObject victoryPanel;
+    public GameObject crosshair;
+    public GameObject hud;
+    public TextMeshProUGUI scoreText;
+    public TextMeshProUGUI timeText;
 
     void Start()
     {
@@ -16,13 +19,30 @@ public class VictoryMenu : MonoBehaviour
 
     public void ShowVictory()
     {
-        victoryShowing = true;
-        victoryPanel.SetActive(true);
-        hud.SetActive(false);
-
-        if (finalScoreText != null && ScoreManager.Instance != null)
+        if (GameTimer.Instance != null)
         {
-            finalScoreText.text = "Score Final: " + ScoreManager.Instance.GetScore();
+            GameTimer.Instance.Stop();
+        }
+
+        victoryPanel.SetActive(true);
+        victoryShowing = true;
+
+        if (hud != null)
+        {
+            hud.SetActive(false);
+        }
+        if (crosshair != null)
+        {
+            crosshair.SetActive(false);
+        }
+
+        if (scoreText != null && ScoreManager.Instance != null)
+        {
+            scoreText.text = "SCORE: " + ScoreManager.Instance.GetScore();
+        }
+        if (timeText != null && GameTimer.Instance != null)
+        {
+            timeText.text = "TEMPO: " + GameTimer.Instance.GetFormattedTime();
         }
 
         Time.timeScale = 0f;
@@ -30,14 +50,14 @@ public class VictoryMenu : MonoBehaviour
         Cursor.visible = true;
     }
 
-    public void Restart()
+    public void Retry()
     {
         victoryShowing = false;
         Time.timeScale = 1f;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
-    public void GoToMainMenu()
+    public void MainMenu()
     {
         victoryShowing = false;
         Time.timeScale = 1f;

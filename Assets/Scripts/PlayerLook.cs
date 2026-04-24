@@ -7,6 +7,11 @@ public class PlayerLook : MonoBehaviour
 
     private float _xRotation = 0f;
 
+    void Start()
+    {
+        mouseSensitivity = PlayerPrefs.GetFloat("Sensitivity", 2f);
+    }
+
     void Update()
     {
         if (VictoryMenu.victoryShowing) return;

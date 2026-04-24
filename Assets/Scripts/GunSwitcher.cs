@@ -13,8 +13,6 @@ public class GunSwitcher : MonoBehaviour
     private float _lastEquipSoundTime = -999f;
     private bool _isFirstEquip = true;
 
-    void Start() {}
-
     public void EquipWeapon(int index)
     {
         for (int i = 0; i < weapons.Length; i++)
@@ -32,10 +30,10 @@ public class GunSwitcher : MonoBehaviour
         else
         {
             if (audioSource != null && equipSound != null
-                && Time.time - _lastEquipSoundTime >= equipSoundCooldown)
+                && Time.unscaledTime - _lastEquipSoundTime >= equipSoundCooldown)
             {
                 audioSource.PlayOneShot(equipSound);
-                _lastEquipSoundTime = Time.time;
+                _lastEquipSoundTime = Time.unscaledTime;
             }
         }
 
@@ -84,5 +82,5 @@ public class GunSwitcher : MonoBehaviour
     }
 
     public float GetLastEquipSoundTime() => _lastEquipSoundTime;
-    public void UpdateLastEquipSoundTime() => _lastEquipSoundTime = Time.time;
+    public void UpdateLastEquipSoundTime() => _lastEquipSoundTime = Time.unscaledTime;
 }

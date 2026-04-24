@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Audio;
 
 public class Bullet : MonoBehaviour
 {
@@ -12,6 +13,9 @@ public class Bullet : MonoBehaviour
     public AudioClip[] fleshImpactSounds;
     public AudioClip surfaceImpactSound;
     public AudioClip hitMarkerSound;
+
+    [Header("Audio Mixer")]
+    public AudioMixerGroup sfxMixerGroup;
 
     [Header("Headshot")]
     public float headshotMultiplier = 2.5f;
@@ -45,11 +49,7 @@ public class Bullet : MonoBehaviour
 
         if (bloodEffect != null)
         {
-            GameObject effect = Instantiate(
-                bloodEffect,
-                transform.position,
-                Quaternion.identity
-            );
+            GameObject effect = Instantiate(bloodEffect, transform.position, Quaternion.identity);
             Destroy(effect, 2f);
         }
 
@@ -63,6 +63,7 @@ public class Bullet : MonoBehaviour
         _hasHit = true;
 
         EnemyHealth enemy = collision.gameObject.GetComponent<EnemyHealth>();
+
         if (enemy != null)
         {
             enemy.TakeDamage(damage, false);
@@ -105,14 +106,19 @@ public class Bullet : MonoBehaviour
 
         float checkDistance = speed * Time.fixedDeltaTime * 2f;
 
-        if (Physics.Raycast(transform.position, transform.forward,
-            out RaycastHit headshotHit, checkDistance, headshotLayer,
-            QueryTriggerInteraction.Collide))
+        if (Physics.Raycast(
+                transform.position,
+                transform.forward,
+                out RaycastHit headshotHit,
+                checkDistance,
+                headshotLayer,
+                QueryTriggerInteraction.Collide))
         {
             if (_hasHit) return;
             _hasHit = true;
 
             HeadshotZone zone = headshotHit.collider.GetComponent<HeadshotZone>();
+
             if (zone != null && zone.enemyHealth != null)
             {
                 float headshotDamage = damage * headshotMultiplier;
@@ -134,13 +140,13 @@ public class Bullet : MonoBehaviour
             }
         }
 
-        if (Physics.Raycast(transform.position, transform.forward,
-            out RaycastHit hit, checkDistance))
+        if (Physics.Raycast(transform.position, transform.forward, out RaycastHit hit, checkDistance))
         {
             if (_hasHit) return;
             _hasHit = true;
 
             EnemyHealth enemy = hit.collider.GetComponent<EnemyHealth>();
+
             if (enemy != null)
             {
                 enemy.TakeDamage(damage, false);
@@ -180,27 +186,43 @@ public class Bullet : MonoBehaviour
         if (fleshImpactSounds != null && fleshImpactSounds.Length > 0)
         {
             AudioClip clip = fleshImpactSounds[Random.Range(0, fleshImpactSounds.Length)];
-            if (clip != null)
-            {
-                AudioSource.PlayClipAtPoint(clip, position);
-            }
+            PlaySoundAtPosition(clip, position, true);
         }
 
         if (hitMarkerSound != null)
         {
             Camera cam = Camera.main;
+
             if (cam != null)
             {
-                AudioSource.PlayClipAtPoint(hitMarkerSound, cam.transform.position);
+                PlaySoundAtPosition(hitMarkerSound, cam.transform.position, false);
             }
         }
     }
 
     void PlaySurfaceSound(Vector3 position)
     {
-        if (surfaceImpactSound != null)
-        {
-            AudioSource.PlayClipAtPoint(surfaceImpactSound, position);
-        }
+        PlaySoundAtPosition(surfaceImpactSound, position, true);
+    }
+
+    void PlaySoundAtPosition(AudioClip clip, Vector3 position, bool is3D)
+    {
+        if (clip == null) return;
+
+        GameObject soundObject = new GameObject("BulletImpactSound");
+        soundObject.transform.position = position;
+
+        AudioSource source = soundObject.AddComponent<AudioSource>();
+        source.clip = clip;
+        source.outputAudioMixerGroup = sfxMixerGroup;
+        source.volume = 1f;
+        source.spatialBlend = is3D ? 1f : 0f;
+        source.rolloffMode = AudioRolloffMode.Logarithmic;
+        source.minDistance = 1f;
+        source.maxDistance = 50f;
+
+        source.Play();
+
+        Destroy(soundObject, clip.length + 0.1f);
     }
 }

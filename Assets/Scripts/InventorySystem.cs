@@ -142,11 +142,11 @@ public class InventorySystem : MonoBehaviour
             int cosIdx = slot - 5;
             if (_cosmeticCounts[cosIdx] <= 0) return;
 
-            if (gunSwitcher != null)
+            if (gunSwitcher != null && gunSwitcher.equipSound != null)
             {
                 AudioSource audio = gunSwitcher.GetComponent<AudioSource>();
-                if (audio != null && gunSwitcher.equipSound != null
-                    && Time.time - gunSwitcher.GetLastEquipSoundTime() >= gunSwitcher.equipSoundCooldown)
+                if (audio != null
+                    && Time.unscaledTime - gunSwitcher.GetLastEquipSoundTime() >= gunSwitcher.equipSoundCooldown)
                 {
                     audio.PlayOneShot(gunSwitcher.equipSound);
                     gunSwitcher.UpdateLastEquipSoundTime();

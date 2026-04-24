@@ -5,8 +5,10 @@ using TMPro;
 public class GameOverMenu : MonoBehaviour
 {
     public GameObject gameOverPanel;
+    public GameObject crosshair;
     public GameObject hud;
-    public TextMeshProUGUI finalScoreText;
+    public TextMeshProUGUI scoreText;
+    public TextMeshProUGUI timeText;
     public static bool gameOverShowing = false;
 
     void Start()
@@ -16,18 +18,43 @@ public class GameOverMenu : MonoBehaviour
 
     public void ShowGameOver()
     {
-        gameOverShowing = true;
-        gameOverPanel.SetActive(true);
-        hud.SetActive(false);
-
-        if (finalScoreText != null && ScoreManager.Instance != null)
+        if (GameTimer.Instance != null)
         {
-            finalScoreText.text = "Score Final: " + ScoreManager.Instance.GetScore();
+            GameTimer.Instance.Stop();
+        }
+
+        gameOverPanel.SetActive(true);
+
+        if (hud != null)
+        {
+            hud.SetActive(false);
+        }
+        if (crosshair != null)
+        {
+            crosshair.SetActive(false);
+        }
+
+        if (scoreText != null && ScoreManager.Instance != null)
+        {
+            scoreText.text = "SCORE: " + ScoreManager.Instance.GetScore();
+        }
+        if (timeText != null && GameTimer.Instance != null)
+        {
+            timeText.text = "TEMPO: " + GameTimer.Instance.GetFormattedTime();
         }
 
         Time.timeScale = 0f;
+        gameOverShowing = true;
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
+    }
+
+    void Update()
+    {
+        if (gameOverShowing && Input.GetKeyDown(KeyCode.R))
+        {
+            Restart();
+        }
     }
 
     public void Restart()
@@ -37,10 +64,15 @@ public class GameOverMenu : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
-    public void GoToMainMenu()
+    public void MainMenu()
     {
         gameOverShowing = false;
         Time.timeScale = 1f;
         SceneManager.LoadScene("MainMenu");
+    }
+
+    public void Quit()
+    {
+        Application.Quit();
     }
 }
