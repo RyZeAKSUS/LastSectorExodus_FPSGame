@@ -81,13 +81,12 @@ Sobreviver ao maior número de hordas possível. Cada horda traz mais inimigos e
 
 ## Como Abrir o Projeto
 
-1. Certifica-te de que tens o **Unity Hub** instalado com a versão **6000.3.9f1**.
-2. Clona ou faz download deste repositório para o teu computador.
-3. Abre o **Unity Hub** e clica em **"Add"** (ou **"Adicionar projeto"**).
-4. Seleciona a pasta raiz do projeto (onde está a pasta `Assets`).
-5. O projeto aparecerá na lista — clica nele para abrir.
-6. Dentro do Unity Editor, abre a cena principal em `Assets/Map/Scenes/Map(nao pasta)`.
-7. Carrega no botão **Play** para correr o jogo.
+1. Clona ou faz download deste repositório para o teu computador.
+2. Abre o **Unity Hub** e clica em **"Add"** (ou **"Adicionar projeto"**).
+3. Seleciona a pasta raiz do projeto (onde está a pasta `Assets`).
+4. O projeto aparecerá na lista — clica nele para abrir.
+5. Dentro do Unity Editor, abre a cena principal em `Assets/Map/Scenes/Map(nao pasta)`.
+6. Carrega no botão **Play** para correr o jogo.
 
 ---
 
