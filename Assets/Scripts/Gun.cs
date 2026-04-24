@@ -74,13 +74,10 @@ public class Gun : MonoBehaviour
         _bulletsLeft = magazineSize;
 
         if (reloadBarObject != null)
-        {
             reloadBarObject.SetActive(false);
-        }
+
         if (reloadBar != null)
-        {
             reloadBar.value = 0f;
-        }
 
         UpdateAmmoUI();
         UpdateFireModeUI();
@@ -146,16 +143,12 @@ public class Gun : MonoBehaviour
 
         if (fireSound != null)
         {
-            AudioSource persistentSource = GetComponentInParent<GunSwitcher>()
-                ?.GetComponent<AudioSource>();
+            AudioSource persistentSource = GetComponentInParent<GunSwitcher>()?.GetComponent<AudioSource>();
+
             if (persistentSource != null)
-            {
                 persistentSource.PlayOneShot(fireSound);
-            }
             else if (audioSource != null)
-            {
                 audioSource.PlayOneShot(fireSound);
-            }
         }
 
         bool isSniperScoped = ADSSystem.Instance != null && ADSSystem.Instance.IsSniperScoped;
@@ -163,6 +156,7 @@ public class Gun : MonoBehaviour
         if (!isSniperScoped && muzzleFlashes != null && muzzleFlashes.Length > 0)
         {
             int randomIndex = Random.Range(0, muzzleFlashes.Length);
+
             if (muzzleFlashes[randomIndex] != null)
             {
                 GameObject flash = Instantiate(
@@ -170,6 +164,7 @@ public class Gun : MonoBehaviour
                     muzzlePoint.position,
                     muzzlePoint.rotation
                 );
+
                 flash.transform.SetParent(muzzlePoint);
                 Destroy(flash, 0.05f);
             }
@@ -180,7 +175,10 @@ public class Gun : MonoBehaviour
 
         bool isAiming = ADSSystem.Instance != null && ADSSystem.Instance.IsAiming;
         bool isCrouching = FindFirstObjectByType<PlayerMovement>()?.IsCrouching() ?? false;
-        float currentSpread = isAiming ? adsSpread : (isCrouching ? hipSpread * 0.5f : hipSpread);
+
+        float currentSpread = isAiming
+            ? adsSpread
+            : (isCrouching ? hipSpread * 0.5f : hipSpread);
 
         Vector3 forward = playerCamera.transform.forward;
         forward += playerCamera.transform.right * Random.Range(-currentSpread, currentSpread);
@@ -188,6 +186,7 @@ public class Gun : MonoBehaviour
         forward.Normalize();
 
         Ray ray = new Ray(playerCamera.transform.position, forward);
+
         Vector3 targetPoint = Physics.Raycast(ray, out RaycastHit hit, range)
             ? hit.point
             : ray.GetPoint(range);
@@ -199,19 +198,26 @@ public class Gun : MonoBehaviour
             {
                 Vector3 holePos = holeHit.point + holeHit.normal * 0.005f;
                 Quaternion holeRot = Quaternion.LookRotation(-holeHit.normal);
+
                 GameObject hole = Instantiate(bulletHolePrefab, holePos, holeRot);
                 hole.transform.localScale = Vector3.one * bulletHoleSize;
+
                 Destroy(hole, 30f);
             }
         }
 
         Vector3 direction = (targetPoint - muzzlePoint.position).normalized;
+
         GameObject bullet = Instantiate(
             bulletPrefab,
             muzzlePoint.position,
             Quaternion.LookRotation(direction)
         );
-        bullet.GetComponent<Bullet>().damage = damage;
+
+        Bullet bulletScript = bullet.GetComponent<Bullet>();
+
+        if (bulletScript != null)
+            bulletScript.damage = damage;
 
         if (_bulletsLeft <= 0 && reserveAmmo > 0)
         {
@@ -232,6 +238,7 @@ public class Gun : MonoBehaviour
             _targetLocalPosition,
             Time.deltaTime * recoilSpeed
         );
+
         transform.localRotation = Quaternion.Lerp(
             transform.localRotation,
             _targetLocalRotation,
@@ -243,6 +250,7 @@ public class Gun : MonoBehaviour
             _originalLocalPosition,
             Time.deltaTime * recoilReturnSpeed
         );
+
         _targetLocalRotation = Quaternion.Lerp(
             _targetLocalRotation,
             _originalLocalRotation,
@@ -256,33 +264,32 @@ public class Gun : MonoBehaviour
         UpdateAmmoUI();
 
         if (audioSource != null && reloadSound != null)
-        {
             audioSource.PlayOneShot(reloadSound);
-        }
 
         if (reloadBarObject != null)
-        {
             reloadBarObject.SetActive(true);
-        }
 
         float elapsed = 0f;
+
         while (elapsed < reloadTime)
         {
             elapsed += Time.deltaTime;
+
             if (reloadBar != null)
-            {
                 reloadBar.value = elapsed / reloadTime;
-            }
+
             yield return null;
         }
 
         if (reloadBarObject != null)
-        {
             reloadBarObject.SetActive(false);
-        }
+
+        if (reloadBar != null)
+            reloadBar.value = 0f;
 
         int bulletsNeeded = magazineSize - _bulletsLeft;
         int bulletsToLoad = Mathf.Min(bulletsNeeded, reserveAmmo);
+
         _bulletsLeft += bulletsToLoad;
         reserveAmmo -= bulletsToLoad;
 
@@ -292,20 +299,7 @@ public class Gun : MonoBehaviour
 
     void OnDisable()
     {
-        if (_isReloading)
-        {
-            StopAllCoroutines();
-            _isReloading = false;
-            if (reloadBarObject != null)
-            {
-                reloadBarObject.SetActive(false);
-            }
-            if (reloadBar != null)
-            {
-                reloadBar.value = 0f;
-            }
-            UpdateAmmoUI();
-        }
+        CancelReloadIfNeeded();
 
         if (_originalLocalPosition != Vector3.zero)
         {
@@ -316,12 +310,36 @@ public class Gun : MonoBehaviour
         }
     }
 
-    public void AddAmmo(int amount)
+    public int AddAmmo(int amount)
     {
+        CancelReloadIfNeeded();
+
         int totalCapacity = magazineSize + maxReserveAmmo;
         int currentTotal = _bulletsLeft + reserveAmmo;
-        int canAdd = totalCapacity - currentTotal;
-        reserveAmmo += Mathf.Min(amount, canAdd);
+        int canAdd = Mathf.Max(0, totalCapacity - currentTotal);
+
+        int amountToAdd = Mathf.Min(amount, canAdd);
+
+        reserveAmmo += amountToAdd;
+
+        UpdateAmmoUI();
+
+        return amountToAdd;
+    }
+
+    void CancelReloadIfNeeded()
+    {
+        if (!_isReloading) return;
+
+        StopAllCoroutines();
+        _isReloading = false;
+
+        if (reloadBarObject != null)
+            reloadBarObject.SetActive(false);
+
+        if (reloadBar != null)
+            reloadBar.value = 0f;
+
         UpdateAmmoUI();
     }
 
@@ -334,6 +352,7 @@ public class Gun : MonoBehaviour
     void UpdateAmmoUI()
     {
         if (ammoText == null) return;
+
         ammoText.text = _bulletsLeft + " | " + reserveAmmo;
     }
 
@@ -348,17 +367,21 @@ public class Gun : MonoBehaviour
         else
         {
             fireModeText.gameObject.SetActive(true);
+
             if (fireMode == FireMode.Automatic)
-            {
                 fireModeText.text = "<color=#FFD700>Automático</color>  |  Manual";
-            }
             else
-            {
                 fireModeText.text = "Automático  |  <color=#FFD700>Manual</color>";
-            }
         }
     }
 
-    public int GetBulletsLeft() => _bulletsLeft;
-    public bool IsReloading() => _isReloading;
+    public int GetBulletsLeft()
+    {
+        return _bulletsLeft;
+    }
+
+    public bool IsReloading()
+    {
+        return _isReloading;
+    }
 }
