@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class EnemySpawner : MonoBehaviour
 {
@@ -12,6 +13,17 @@ public class EnemySpawner : MonoBehaviour
     public GameObject[] mutantVariants;
     public GameObject[] bossVariants;
 
+    [Header("Tipos permitidos nesta zona")]
+    public bool allowScavengers = true;
+    public bool allowArachnids = false;
+    public bool allowMutants = false;
+    public bool allowBosses = false;
+
+    [Header("Boss na última wave")]
+    public bool forceBossOnFinalWave = false;
+    public int bossesOnFinalWave = 1;
+
+    [Header("Spawn")]
     public Transform[] spawnPoints;
     public Transform player;
 
@@ -19,9 +31,12 @@ public class EnemySpawner : MonoBehaviour
     public int totalWaves = 4;
     public float timeBetweenWaves = 8f;
     public int baseEnemiesPerWave = 4;
+    public int enemiesIncreasePerWave = 2;
 
-    [Header("Drops ao completar a zona")]
-    public ItemDefinition[] zoneDropItems;
+    [Header("Drops aleatórios ao completar a zona")]
+    public ItemDefinition[] possibleDrops;
+    public int minDrops = 1;
+    public int maxDrops = 3;
 
     [Header("Ativação")]
     public bool activateOnStart = false;
@@ -62,6 +77,7 @@ public class EnemySpawner : MonoBehaviour
     public void Activate()
     {
         if (activated) return;
+
         activated = true;
         StartWave();
     }
@@ -87,6 +103,7 @@ public class EnemySpawner : MonoBehaviour
             WaveNotification.Instance?.ShowPersistent(
                 zoneName + " - Próxima wave em " + Mathf.CeilToInt(timer) + " segundos"
             );
+
             timer -= Time.deltaTime;
             yield return null;
         }
@@ -98,15 +115,13 @@ public class EnemySpawner : MonoBehaviour
     void StartWave()
     {
         _currentWave++;
+        _firstAlertReceived = false;
 
-        int enemiesToSpawn;
-        if (_currentWave == totalWaves)
+        int enemiesToSpawn = baseEnemiesPerWave + (_currentWave - 1) * enemiesIncreasePerWave;
+
+        if (_currentWave == totalWaves && forceBossOnFinalWave)
         {
-            enemiesToSpawn = 3;
-        }
-        else
-        {
-            enemiesToSpawn = baseEnemiesPerWave + (_currentWave - 1) * 2;
+            enemiesToSpawn = Mathf.Max(enemiesToSpawn, bossesOnFinalWave);
         }
 
         _enemiesAlive = enemiesToSpawn;
@@ -116,12 +131,12 @@ public class EnemySpawner : MonoBehaviour
             WaveNotification.Instance?.Show(
                 zoneName + " - Wave " + _currentWave + "/" + totalWaves
             );
-            _firstAlertReceived = false;
         }
 
         if (_currentWave > 1)
         {
             PlayerHealth ph = FindFirstObjectByType<PlayerHealth>();
+
             if (ph != null && ph.GetCurrentHealth() / ph.maxHealth > 0.75f)
             {
                 int bonus = 50 * (_currentWave - 1);
@@ -132,10 +147,24 @@ public class EnemySpawner : MonoBehaviour
         for (int i = 0; i < enemiesToSpawn; i++)
         {
             Transform spawnPoint = spawnPoints[i % spawnPoints.Length];
-            Vector3 offset = new Vector3(Random.Range(-3f, 3f), 0f, Random.Range(-3f, 3f));
+
+            Vector3 offset = new Vector3(
+                Random.Range(-3f, 3f),
+                0f,
+                Random.Range(-3f, 3f)
+            );
+
             Vector3 spawnPos = spawnPoint.position + offset;
 
-            GameObject prefab = ChoosePrefab();
+            GameObject prefab = ChoosePrefab(i, enemiesToSpawn);
+
+            if (prefab == null)
+            {
+                Debug.LogWarning("Spawner " + zoneName + " não tem prefabs válidos para os tipos permitidos.");
+                _enemiesAlive--;
+                continue;
+            }
+
             GameObject enemy = Instantiate(prefab, spawnPos, spawnPoint.rotation);
             EnemyController ctrl = enemy.GetComponent<EnemyController>();
 
@@ -148,34 +177,50 @@ public class EnemySpawner : MonoBehaviour
         }
     }
 
-    GameObject ChoosePrefab()
+    GameObject ChoosePrefab(int enemyIndex, int enemiesToSpawn)
     {
-        GameObject[] pool;
-
-        if (_currentWave == 1)
+        if (_currentWave == totalWaves &&
+            forceBossOnFinalWave &&
+            bossVariants != null &&
+            bossVariants.Length > 0 &&
+            enemyIndex < bossesOnFinalWave)
         {
-            pool = scavengerVariants;
-        }
-        else if (_currentWave == 2)
-        {
-            pool = Random.value < 0.5f ? scavengerVariants : arachnidVariants;
-        }
-        else if (_currentWave == 3)
-        {
-            float r = Random.value;
-            pool = r < 0.33f ? scavengerVariants : r < 0.66f ? arachnidVariants : mutantVariants;
-        }
-        else
-        {
-            pool = Random.value < 0.5f ? bossVariants : mutantVariants;
+            return GetRandomFromArray(bossVariants);
         }
 
-        return pool[Random.Range(0, pool.Length)];
+        List<GameObject[]> allowedPools = new List<GameObject[]>();
+
+        if (allowScavengers && scavengerVariants != null && scavengerVariants.Length > 0)
+            allowedPools.Add(scavengerVariants);
+
+        if (allowArachnids && arachnidVariants != null && arachnidVariants.Length > 0)
+            allowedPools.Add(arachnidVariants);
+
+        if (allowMutants && mutantVariants != null && mutantVariants.Length > 0)
+            allowedPools.Add(mutantVariants);
+
+        if (allowBosses && bossVariants != null && bossVariants.Length > 0)
+            allowedPools.Add(bossVariants);
+
+        if (allowedPools.Count == 0)
+        {
+            return null;
+        }
+
+        GameObject[] chosenPool = allowedPools[Random.Range(0, allowedPools.Count)];
+        return GetRandomFromArray(chosenPool);
+    }
+
+    GameObject GetRandomFromArray(GameObject[] array)
+    {
+        if (array == null || array.Length == 0) return null;
+        return array[Random.Range(0, array.Length)];
     }
 
     IEnumerator ActivateAfterDelay(EnemyController ctrl, float delay)
     {
         yield return new WaitForSeconds(delay);
+
         if (ctrl != null)
         {
             ctrl.Activate();
@@ -191,20 +236,35 @@ public class EnemySpawner : MonoBehaviour
 
     void SpawnZoneDrops()
     {
-        if (zoneDropItems == null || zoneDropItems.Length == 0) return;
+        if (possibleDrops == null || possibleDrops.Length == 0) return;
 
-        for (int i = 0; i < zoneDropItems.Length; i++)
+        int dropCount = Random.Range(minDrops, maxDrops + 1);
+
+        for (int i = 0; i < dropCount; i++)
         {
-            ItemDefinition item = zoneDropItems[i];
+            ItemDefinition item = possibleDrops[Random.Range(0, possibleDrops.Length)];
+
             if (item == null || item.pickupPrefab == null) continue;
 
-            Transform spawnPoint = spawnPoints[0];
-            Vector3 offset = new Vector3(Random.Range(-2f, 2f), 0f, Random.Range(-2f, 2f));
+            Transform spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
+
+            Vector3 offset = new Vector3(
+                Random.Range(-3f, 3f),
+                0f,
+                Random.Range(-3f, 3f)
+            );
+
             Vector3 spawnPos = spawnPoint.position + offset;
 
             Vector3 rayOrigin = spawnPos + Vector3.up * 5f;
-            if (Physics.Raycast(rayOrigin, Vector3.down, out RaycastHit hit, 20f,
-                Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
+
+            if (Physics.Raycast(
+                rayOrigin,
+                Vector3.down,
+                out RaycastHit hit,
+                20f,
+                Physics.DefaultRaycastLayers,
+                QueryTriggerInteraction.Ignore))
             {
                 spawnPos.y = hit.point.y + 0.1f;
             }
@@ -216,6 +276,7 @@ public class EnemySpawner : MonoBehaviour
     public void OnFirstEnemyAlert()
     {
         if (_firstAlertReceived) return;
+
         _firstAlertReceived = true;
 
         WaveNotification.Instance?.Show(
@@ -223,5 +284,8 @@ public class EnemySpawner : MonoBehaviour
         );
     }
 
-    public void EnemyDied() => _enemiesAlive--;
+    public void EnemyDied()
+    {
+        _enemiesAlive--;
+    }
 }

@@ -8,8 +8,8 @@ public class HungerThirst : MonoBehaviour
     [Header("Configuração")]
     public float maxHunger = 100f;
     public float maxThirst = 100f;
-    public float hungerDepletionRate = 3f;
-    public float thirstDepletionRate = 6f;
+    public float hungerDepletionRate = 5f;
+    public float thirstDepletionRate = 9f;
     public float hungerHpDrainRate = 2f;
     public float thirstHpDrainRate = 5f;
 
